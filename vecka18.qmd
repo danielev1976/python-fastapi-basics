@@ -1,0 +1,159 @@
+---
+title: "Vecka 18: Testning och avslutande projekt"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Sista veckan
+
+Sjutton veckor sedan skrev du ditt första `print()`. Nu har GameLog ett komplett API, en riktig databas, och grundläggande säkerhet. Den här sista veckan lär vi oss testa koden automatiskt — och sedan är resten av veckan ditt eget avslutande projekt.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- skriva och köra tester med `pytest`
+- testa FastAPI-endpoints med `TestClient`
+- bygga vidare på ett befintligt API med en egen funktion
+:::
+
+## 1. Varför testa automatiskt?
+
+Hittills har vi testat manuellt via `/docs`. Det fungerar, men blir opraktiskt när API:et växer — varje gång du ändrar något måste du testa om *allt* för hand. Automatiska tester kör om samma kontroller på sekunder, varje gång du sparar en ändring.
+
+## 2. Installation
+
+```bash
+pip install pytest httpx
+```
+
+## 3. Din första test
+
+```python
+# test_basic.py
+def add(a, b):
+    return a + b
+
+def test_add():
+    assert add(2, 3) == 5
+    assert add(-1, 1) == 0
+```
+
+Kör med:
+
+```bash
+pytest
+```
+
+`pytest` hittar automatiskt alla filer som börjar med `test_`, och alla funktioner som börjar med `test_` inuti dem. `assert` kontrollerar att ett villkor är sant — är det falskt, misslyckas testet och pytest visar vad som förväntades jämfört med vad som faktiskt hände.
+
+## 4. Testa en FastAPI-app
+
+FastAPI har inbyggt stöd för att testa endpoints utan att starta en riktig server.
+
+```python
+# test_games.py
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+def test_read_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Welcome to the GameLog API"}
+
+
+def test_create_game():
+    response = client.post("/games/", json={
+        "title": "Hades",
+        "platform": "PC",
+        "rating": 9,
+    })
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Hades"
+    assert "id" in data
+
+
+def test_get_nonexistent_game():
+    response = client.get("/games/999999")
+    assert response.status_code == 404
+```
+
+`TestClient` simulerar riktiga HTTP-requests mot din app, i minnet — snabbt, och utan att en server faktiskt behöver köras.
+
+::: {.callout-warning}
+## Testa mot en egen testdatabas
+I exemplet ovan skriver testerna till samma `gamelog.db` som du använder när du utvecklar. I ett riktigt projekt låter man tester köra mot en separat testdatabas (ofta en tillfällig SQLite-fil i minnet, `sqlite:///:memory:`), så att testerna aldrig påverkar din riktiga data. Fundera på hur du skulle lösa det i ditt eget projekt.
+:::
+
+## 5. Testa fler scenarier
+
+```python
+def test_update_game():
+    create_response = client.post("/games/", json={
+        "title": "Celeste", "platform": "Switch", "rating": 8,
+    })
+    game_id = create_response.json()["id"]
+
+    update_response = client.put(f"/games/{game_id}", json={"rating": 10})
+    assert update_response.status_code == 200
+    assert update_response.json()["rating"] == 10
+
+
+def test_delete_game():
+    create_response = client.post("/games/", json={
+        "title": "Temp Game", "platform": "PC", "rating": 5,
+    })
+    game_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/games/{game_id}")
+    assert delete_response.status_code == 204
+
+    get_response = client.get(f"/games/{game_id}")
+    assert get_response.status_code == 404
+```
+
+::: {.callout-tip}
+## Testa både lyckade och misslyckade fall
+Ett bra test-set täcker inte bara "allt gick bra" (happy path), utan också felfall: ogiltig data, saknade resurser, obehöriga requests. `test_get_nonexistent_game` ovan är ett exempel — minst lika viktigt som testerna för att skapa data.
+:::
+
+## Avslutande projekt
+
+::: {.callout-important}
+## Projektuppgift
+Bygg vidare på ditt GameLog-API med **minst en** egen funktion enligt något av alternativen nedan (eller en egen idé, stäm av med din lärare):
+
+**Alternativ A — Recensioner**
+Lägg till en `reviews`-resurs (fritextrecension + betyg, kopplad till en spelare och ett spel) med komplett CRUD, kopplad till databasen.
+
+**Alternativ B — Favoritlistor**
+Låt varje spelare skapa namngivna listor (t.ex. "Att spela 2026") med flera spel kopplade, med en egen tabell och relationer.
+
+**Alternativ C — Statistik-dashboard**
+Bygg ut `/stats`-endpoints rejält: mest spelade spel, genomsnittlig tid till genomspelning per plattform, spelare med flest loggade timmar — med aggregerande SQL-queries.
+
+**Krav, oavsett alternativ:**
+
+- minst en ny databastabell med relation till en befintlig
+- fullständig validering med Pydantic
+- korrekta statuskoder och felhantering
+- minst 5 automatiska tester som täcker både lyckade och misslyckade fall
+:::
+
+::: {.callout-important}
+## Extra utmaning — dokumentation
+Skriv en kort `README.md` för ditt GameLog-projekt: hur man installerar och startar det, vilka endpoints som finns, och vad din egna tillagda funktion gör.
+:::
+
+## Sammanfattning
+
+Du har nu byggt en komplett applikation från grunden: Python-syntax, objektorienterad programmering, ett REST-API med FastAPI, en riktig databas med SQLAlchemy, grundläggande säkerhet, och automatiska tester. Grattis — det här är precis den väg en riktig backend-utvecklare går genom, bara komprimerad till 18 veckor. Lycka till med det avslutande projektet!

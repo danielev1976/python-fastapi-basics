@@ -1,0 +1,180 @@
+---
+title: "Vecka 7: Arv och polymorfism"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## "Is-a"-relationer
+
+Förra veckan byggde vi "has-a"-relationer med komposition. Den här veckan handlar om **"is-a"**-relationer: ett `DigitalGame` **är** ett `Game`, men med lite extra egenskaper (t.ex. filstorlek och nedladdningslänk). I stället för att skriva om hela `Game`-klassen kan vi **ärva** från den.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- skapa en subklass som ärver från en basklass
+- använda `super()` för att återanvända basklassens kod
+- override:a metoder i en subklass
+- förstå och använda polymorfism
+- kontrollera typer med `isinstance()`
+:::
+
+## 1. Grundläggande arv
+
+```python
+class Game:
+    def __init__(self, title, rating):
+        self.title = title
+        self.rating = rating
+
+    def describe(self):
+        return f"{self.title} - {self.rating}/10"
+
+class DigitalGame(Game):
+    def __init__(self, title, rating, file_size_gb):
+        super().__init__(title, rating)   # återanvänd Game.__init__
+        self.file_size_gb = file_size_gb
+
+hades = DigitalGame("Hades", 9, file_size_gb=15)
+
+print(hades.title)          # ärvt från Game
+print(hades.describe())     # ärvt från Game
+print(hades.file_size_gb)   # unikt för DigitalGame
+```
+
+- `class DigitalGame(Game):` betyder "DigitalGame ärver från Game".
+- `super().__init__(...)` anropar basklassens konstruktor, så vi slipper skriva `self.title = title` igen.
+- `DigitalGame` får automatiskt tillgång till alla metoder och attribut från `Game`.
+
+## 2. Fler subklasser
+
+```python
+class PhysicalGame(Game):
+    def __init__(self, title, rating, shelf_location):
+        super().__init__(title, rating)
+        self.shelf_location = shelf_location
+
+celeste = DigitalGame("Celeste", 10, file_size_gb=1)
+zelda = PhysicalGame("Zelda: Tears of the Kingdom", 9, shelf_location="Hyllan, rad 2")
+
+print(celeste.describe())
+print(zelda.describe())
+```
+
+Båda `DigitalGame` och `PhysicalGame` **är** `Game`-objekt, och kan användas överallt en `Game` förväntas.
+
+## 3. Override — skriva om en metod
+
+En subklass kan ersätta en metod från basklassen med sin egen version.
+
+```python
+class DigitalGame(Game):
+    def __init__(self, title, rating, file_size_gb):
+        super().__init__(title, rating)
+        self.file_size_gb = file_size_gb
+
+    def describe(self):   # override av Game.describe()
+        base_description = super().describe()   # återanvänd basklassens version
+        return f"{base_description} [Digital, {self.file_size_gb}GB]"
+
+class PhysicalGame(Game):
+    def __init__(self, title, rating, shelf_location):
+        super().__init__(title, rating)
+        self.shelf_location = shelf_location
+
+    def describe(self):
+        base_description = super().describe()
+        return f"{base_description} [Physical, {self.shelf_location}]"
+
+hades = DigitalGame("Hades", 9, file_size_gb=15)
+zelda = PhysicalGame("Zelda", 9, shelf_location="Hyllan A2")
+
+print(hades.describe())   # Hades - 9/10 [Digital, 15GB]
+print(zelda.describe())   # Zelda - 9/10 [Physical, Hyllan A2]
+```
+
+## 4. Polymorfism
+
+**Polymorfism** betyder att samma metodanrop (`describe()`) beter sig olika beroende på vilket objekts typ det gäller — utan att den anropande koden behöver bry sig om exakt vilken subklass det är.
+
+```python
+backlog = [
+    DigitalGame("Hades", 9, file_size_gb=15),
+    PhysicalGame("Zelda", 9, shelf_location="Hyllan A2"),
+    DigitalGame("Celeste", 10, file_size_gb=1),
+]
+
+for game in backlog:
+    print(game.describe())   # rätt version körs automatiskt för varje objekt
+```
+
+Loopen vet inte (och behöver inte veta) om varje spel är digitalt eller fysiskt — den anropar bara `describe()`, och Python ser till att rätt version körs.
+
+::: {.callout-tip}
+## Varför är detta kraftfullt?
+Utan polymorfism hade vi behövt `if isinstance(game, DigitalGame): ... elif isinstance(game, PhysicalGame): ...` överallt vi vill beskriva ett spel. Med polymorfism sköter varje klass sitt eget beteende, och resten av koden blir enklare.
+:::
+
+## 5. isinstance() — när du faktiskt behöver veta typen
+
+Ibland behöver du ändå kontrollera vilken typ ett objekt är.
+
+```python
+for game in backlog:
+    if isinstance(game, DigitalGame):
+        print(f"{game.title} takes up {game.file_size_gb}GB of storage")
+```
+
+`isinstance(game, DigitalGame)` returnerar `True` även om `game` egentligen är en subklass till `DigitalGame` — den är alltså smartare än att bara jämföra typer exakt.
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Grundläggande arv
+Skapa en basklass `Game` med `title` och `rating`. Skapa en subklass `DigitalGame` med ett extra attribut `download_size_gb`. Skapa ett objekt och skriv ut alla attribut.
+:::
+
+::: {.callout-important}
+## Övning 2 – Ytterligare en subklass
+Skapa en subklass `PhysicalGame` med ett extra attribut `condition` (t.ex. `"Ny"`, `"Begagnad"`). Skapa ett objekt och skriv ut det.
+:::
+
+::: {.callout-important}
+## Övning 3 – Override describe()
+Lägg till en `describe()`-metod på `Game`, och override:a den i båda subklasserna så att de lägger till sin egen extra information (använd `super().describe()`).
+:::
+
+::: {.callout-important}
+## Övning 4 – Polymorfism i praktiken
+Skapa en lista med en blandning av `DigitalGame`- och `PhysicalGame`-objekt. Loopa igenom listan och anropa `describe()` på varje, utan att skriva någon `if`-sats.
+:::
+
+::: {.callout-important}
+## Övning 5 – isinstance
+Utgå från listan i övning 4. Räkna hur många av spelen som är `DigitalGame` respektive `PhysicalGame`, med `isinstance()`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Player-hierarki
+Skapa en basklass `Player` med `name`. Skapa en subklass `SpeedrunPlayer` med ett extra attribut `personal_best_time`, och en metod `describe()` som visar namnet och bästa tiden.
+:::
+
+::: {.callout-important}
+## Övning 7 – Beräkning som skiljer sig per subklass
+Ge `Game` en metod `storage_footprint()` som returnerar `0` (fysiska spel tar ingen hårddiskplats). Override:a den i `DigitalGame` så den returnerar `file_size_gb`/`download_size_gb`. Summera total lagringsplats för en lista av blandade spel.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Tre nivåer av arv
+Skapa `Game` → `DigitalGame` → `SubscriptionGame` (ett digitalt spel som ingår i en prenumerationstjänst, t.ex. Game Pass, med ett extra attribut `service_name`). Testa att `super()` fungerar korrekt genom hela kedjan, och att `isinstance(sub_game, Game)` är `True`.
+:::
+
+## Sammanfattning
+
+Nu kan du modellera "is-a"-relationer med arv, återanvända kod med `super()`, och dra nytta av polymorfism för att skriva enklare kod som jobbar med olika typer på ett enhetligt sätt. Nästa vecka rundar vi av OOP-delen med **dataclasses och moderna idiom** — ett kortare och mer Pythoniskt sätt att skriva klasser, som dessutom förbereder oss perfekt för Pydantic-modellerna vi möter i FastAPI-delen.

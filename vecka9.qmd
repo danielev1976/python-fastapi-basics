@@ -1,0 +1,190 @@
+---
+title: "Vecka 9: HTTP-grunder och din första FastAPI-app"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Dags att gå ut på nätet
+
+Hittills har GameLog varit ett program som körs i din terminal. Den här veckan tar vi det stora steget: GameLog blir ett **API** — tillgängligt över nätverket, redo att pratas med från en webbläsare, en mobilapp, eller ett annat program.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- förklara grunderna i HTTP: metoder, statuskoder, JSON
+- installera och starta en FastAPI-app
+- skapa endpoints med path- och query-parametrar
+- utforska ditt API med den automatiska Swagger-dokumentationen
+:::
+
+## 1. Hur webben pratar: HTTP
+
+Varje gång du besöker en webbsida skickar din webbläsare en **HTTP-request** till en server, och får en **HTTP-response** tillbaka. Ett API fungerar likadant, förutom att svaret oftast är JSON-data i stället för en webbsida.
+
+### HTTP-metoder
+
+| Metod | Används för |
+|---|---|
+| `GET` | hämta data |
+| `POST` | skapa något nytt |
+| `PUT` | uppdatera något befintligt (hela objektet) |
+| `PATCH` | uppdatera något befintligt (delvis) |
+| `DELETE` | ta bort något |
+
+### Statuskoder
+
+| Kod | Betyder |
+|---|---|
+| `200 OK` | allt gick bra |
+| `201 Created` | något skapades |
+| `400 Bad Request` | klienten skickade felaktig data |
+| `404 Not Found` | resursen finns inte |
+| `500 Internal Server Error` | något gick fel på servern |
+
+::: {.callout-tip}
+## Testa själv
+Öppna nätverksfliken (Network) i webbläsarens utvecklarverktyg och ladda om en sida. Du ser exakt de här HTTP-requesterna i praktiken.
+:::
+
+## 2. Installera FastAPI
+
+```bash
+pip install fastapi uvicorn
+```
+
+`FastAPI` är själva ramverket. `uvicorn` är servern som faktiskt kör din app och lyssnar efter requests.
+
+## 3. Din första endpoint
+
+Skapa `main.py`:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the GameLog API"}
+```
+
+Starta servern:
+
+```bash
+uvicorn main:app --reload
+```
+
+- `main` = filnamnet (`main.py`)
+- `app` = variabeln som innehåller FastAPI-instansen
+- `--reload` = servern startar om automatiskt när du sparar ändringar
+
+Öppna `http://127.0.0.1:8000` i webbläsaren — du ser JSON-svaret direkt.
+
+::: {.callout-tip}
+## Automatisk dokumentation
+Gå till `http://127.0.0.1:8000/docs` för att se **Swagger UI** — en interaktiv sida där du kan testa alla dina endpoints direkt i webbläsaren. FastAPI genererar den helt automatiskt utifrån din kod.
+:::
+
+## 4. Fler endpoints
+
+```python
+games = [
+    {"id": 1, "title": "Hades", "rating": 9},
+    {"id": 2, "title": "Celeste", "rating": 10},
+]
+
+@app.get("/games")
+def get_games():
+    return games
+```
+
+Gå till `http://127.0.0.1:8000/games` — du ser listan som JSON.
+
+## 5. Path-parametrar
+
+En del av URL:en kan vara dynamisk, t.ex. ett spel-ID.
+
+```python
+@app.get("/games/{game_id}")
+def get_game(game_id: int):
+    for game in games:
+        if game["id"] == game_id:
+            return game
+    return {"error": "Game not found"}
+```
+
+`http://127.0.0.1:8000/games/1` returnerar Hades. `game_id: int` gör att FastAPI automatiskt konverterar och validerar att det faktiskt är ett heltal — skriver du `/games/hello` får du ett tydligt valideringsfel helt gratis.
+
+## 6. Query-parametrar
+
+Parametrar efter `?` i URL:en, t.ex. för filtrering.
+
+```python
+@app.get("/games/search")
+def search_games(platform: str = None, min_rating: float = 0):
+    results = games
+    if platform:
+        results = [g for g in results if g.get("platform") == platform]
+    results = [g for g in results if g["rating"] >= min_rating]
+    return results
+```
+
+`http://127.0.0.1:8000/games/search?min_rating=9` returnerar bara spel med minst betyg 9.
+
+::: {.callout-warning}
+## Ordning spelar roll
+`/games/search` måste definieras **före** `/games/{game_id}` i koden om du har båda, annars tolkar FastAPI `"search"` som ett `game_id`-värde. Vi löser det här mer strukturerat med routers i vecka 11.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Din första app
+Installera FastAPI och uvicorn. Skapa en app med en `/`-endpoint som returnerar `{"message": "Welcome to GameLog"}`. Starta servern och kontrollera i webbläsaren.
+:::
+
+::: {.callout-important}
+## Övning 2 – Utforska /docs
+Gå till `/docs` i din körande app. Testa att anropa din endpoint direkt därifrån ("Try it out").
+:::
+
+::: {.callout-important}
+## Övning 3 – Lista med spel
+Skapa en lista med minst 5 spel (dictionaries med `id`, `title`, `platform`, `rating`) och en `/games`-endpoint som returnerar hela listan.
+:::
+
+::: {.callout-important}
+## Övning 4 – Hämta ett specifikt spel
+Skapa en `/games/{game_id}`-endpoint som returnerar rätt spel baserat på ID, eller ett felmeddelande om det inte finns.
+:::
+
+::: {.callout-important}
+## Övning 5 – Query-parameter för plattform
+Skapa en `/games/by-platform`-endpoint med en query-parameter `platform` som filtrerar listan.
+:::
+
+::: {.callout-important}
+## Övning 6 – Kombinerade filter
+Utöka övning 5 med ytterligare en query-parameter `min_rating` (default `0`), och kombinera båda filtren.
+:::
+
+::: {.callout-important}
+## Övning 7 – Spelare-endpoint
+Skapa en egen lista med spelare, och en `/players/{player_id}`-endpoint på samma sätt som för spel.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Statistik-endpoint
+Skapa en `/games/stats`-endpoint som returnerar antal spel, genomsnittligt betyg, och högst rankade spel — allt beräknat i endpointen från listan med spel.
+:::
+
+## Sammanfattning
+
+GameLog är nu ett riktigt API som svarar på HTTP-requests, med både path- och query-parametrar. Nästa vecka fördjupar vi oss i **Pydantic-modeller** — hur vi validerar och strukturerar data som skickas *till* API:et (t.ex. när ett nytt spel skapas), inte bara det vi skickar tillbaka.

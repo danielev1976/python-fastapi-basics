@@ -1,0 +1,247 @@
+---
+title: "Vecka 2: Datastrukturer"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Från enstaka värden till samlingar
+
+Förra veckan sparade vi ett spel i taget i egna variabler. Det fungerar dåligt när backloggen växer till tio, tjugo eller hundra spel. Den här veckan lär vi oss Pythons fyra viktigaste datastrukturer – verktygen som gör att vi kan lagra och organisera hela GameLog i minnet.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- använda listor (`list`) för att lagra flera värden i ordning
+- använda tuples (`tuple`) för värden som inte ska ändras
+- använda dictionaries (`dict`) för att koppla ihop nycklar och värden
+- använda sets (`set`) för unika värden
+- skriva enkla list comprehensions
+:::
+
+## 1. Listor (`list`)
+
+En lista är en ordnad samling värden som kan ändras (den är **mutable**).
+
+```python
+backlog = ["Hades", "Celeste", "Hollow Knight"]
+
+print(backlog[0])        # Hades
+print(backlog[-1])       # Hollow Knight (sista elementet)
+print(len(backlog))      # 3
+```
+
+### Lägga till och ta bort
+
+```python
+backlog.append("Stardew Valley")     # lägg till sist
+backlog.remove("Celeste")            # ta bort ett specifikt värde
+backlog.insert(0, "Elden Ring")      # lägg till på en specifik plats
+
+print(backlog)
+```
+
+### Slicing
+
+```python
+top_three = backlog[0:3]   # de tre första spelen
+last_two = backlog[-2:]    # de två sista spelen
+```
+
+### Loopa över en lista
+
+```python
+for game in backlog:
+    print("-", game)
+```
+
+::: {.callout-tip}
+## enumerate()
+Behöver du både index och värde i loopen, använd `enumerate()`:
+
+```python
+for index, game in enumerate(backlog):
+    print(index + 1, game)
+```
+:::
+
+## 2. Tuples (`tuple`)
+
+En tuple liknar en lista, men går **inte** att ändra efter att den skapats (den är **immutable**). Bra för värden som hör ihop och som ska förbli fasta, t.ex. koordinater eller en release-info.
+
+```python
+release_info = ("The Legend of Zelda: Tears of the Kingdom", 2023)
+
+title, year = release_info   # unpacking
+print(title)
+print(year)
+```
+
+Om du försöker ändra en tuple får du ett fel:
+
+```python
+release_info[0] = "Nytt namn"   # TypeError!
+```
+
+::: {.callout-tip}
+## Varför använda tuples?
+Tuples signalerar till andra som läser koden: "det här värdet ska inte ändras". De är också snabbare och tar mindre minne än listor.
+:::
+
+## 3. Dictionaries (`dict`)
+
+En dictionary kopplar ihop **nycklar** med **värden** – perfekt för att representera ett spel med flera egenskaper.
+
+```python
+game = {
+    "title": "Hollow Knight",
+    "platform": "Switch",
+    "rating": 9.5,
+    "completed": True,
+}
+
+print(game["title"])         # Hollow Knight
+print(game.get("rating"))    # 9.5
+```
+
+### Lägga till, ändra och ta bort
+
+```python
+game["hours_played"] = 42          # lägg till ny nyckel
+game["rating"] = 10                # ändra befintligt värde
+del game["hours_played"]           # ta bort en nyckel
+```
+
+### Loopa över en dictionary
+
+```python
+for key, value in game.items():
+    print(key, "->", value)
+```
+
+### En lista av dictionaries – hela backloggen
+
+Det här är mönstret vi kommer använda genom stora delar av kursen, innan vi har en riktig databas:
+
+```python
+games = [
+    {"title": "Hades", "platform": "PC", "rating": 9},
+    {"title": "Celeste", "platform": "Switch", "rating": 10},
+    {"title": "Hollow Knight", "platform": "Switch", "rating": 9.5},
+]
+
+for game in games:
+    print(game["title"], "-", game["rating"])
+```
+
+## 4. Sets (`set`)
+
+En set lagrar unika värden, utan ordning och utan dubbletter. Bra för t.ex. alla plattformar du äger spel på.
+
+```python
+platforms = {"PC", "Switch", "PlayStation", "PC"}
+print(platforms)          # dubbletten "PC" försvinner automatiskt
+print(len(platforms))     # 3
+```
+
+```python
+platforms.add("Xbox")
+platforms.discard("PlayStation")
+```
+
+Sets är också praktiska för att jämföra samlingar:
+
+```python
+my_platforms = {"PC", "Switch"}
+friend_platforms = {"Switch", "Xbox"}
+
+shared = my_platforms & friend_platforms   # gemensamma plattformar
+all_platforms = my_platforms | friend_platforms  # alla, utan dubbletter
+```
+
+## 5. List comprehensions
+
+Ett kortare sätt att skapa en ny lista utifrån en annan.
+
+```python
+titles = [game["title"] for game in games]
+print(titles)   # ['Hades', 'Celeste', 'Hollow Knight']
+```
+
+Med villkor:
+
+```python
+top_rated = [game["title"] for game in games if game["rating"] >= 9.5]
+print(top_rated)
+```
+
+::: {.callout-tip}
+## Läsbarhet framför allt
+List comprehensions är smidiga för korta, enkla uttryck. Blir raden svår att läsa – använd en vanlig `for`-loop i stället. Kod som är lätt att förstå vinner alltid över kod som är kort.
+:::
+
+## Datastrukturer – en snabb jämförelse
+
+| Typ | Ordnad? | Kan ändras? | Dubbletter tillåtna? | Exempel på användning |
+|---|---|---|---|---|
+| `list` | Ja | Ja | Ja | Backloggen, en lista med spel |
+| `tuple` | Ja | Nej | Ja | Fast release-info (titel, år) |
+| `dict` | Ja (från Python 3.7+) | Ja | Nycklar unika | Ett spel med flera egenskaper |
+| `set` | Nej | Ja | Nej | Alla unika plattformar du äger |
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Din backlogg som lista
+Skapa en lista `backlog` med minst 6 speltitlar. Skriv ut hela listan med en `for`-loop, numrerad med `enumerate()`.
+:::
+
+::: {.callout-important}
+## Övning 2 – Lägg till och ta bort
+Utgå från listan i övning 1. Lägg till ett nytt spel längst fram med `insert()`, ta bort ett spel med `remove()`, och skriv ut listan före och efter.
+:::
+
+::: {.callout-important}
+## Övning 3 – Release-info som tuple
+Skapa tre tuples med `(title, release_year)` för tre olika spel. Loopa igenom dem och skriv ut "TITEL kom ut YEAR".
+:::
+
+::: {.callout-important}
+## Övning 4 – Ett spel som dictionary
+Skapa en dictionary `game` med minst fem nycklar (`title`, `platform`, `rating`, `completed`, `hours_played`). Skriv ut varje nyckel/värde-par med en `for`-loop.
+:::
+
+::: {.callout-important}
+## Övning 5 – Hela backloggen som dictionaries
+Skapa en lista `games` med minst 5 dictionaries (samma struktur som övning 4). Skriv ett program som räknar ut och skriver ut det genomsnittliga betyget för alla spel.
+:::
+
+::: {.callout-important}
+## Övning 6 – Mina plattformar
+Skapa en set `platforms` med alla plattformar du äger spel på (lägg gärna in någon dubblett för att se att den försvinner). Skriv ut hur många unika plattformar du har.
+:::
+
+::: {.callout-important}
+## Övning 7 – Filtrera backloggen
+Utgå från listan `games` i övning 5. Använd en list comprehension för att skapa en ny lista `favorites` med bara titlarna på spel som har `rating >= 8`.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Sök i backloggen
+Skriv ett program som frågar användaren efter en speltitel med `input()`, och söker igenom listan `games` (dictionaries). Skriv ut spelets alla detaljer om det hittas, annars ett meddelande om att spelet inte finns i backloggen.
+:::
+
+::: {.callout-important}
+## Övning 9 (utmaning) – Gemensamma spel
+Skapa två sets, `my_games` och `friend_games`, med speltitlar. Använd mängdoperatorer (`&`, `|`, `-`) för att skriva ut: (1) spel ni båda har, (2) alla spel tillsammans utan dubbletter, (3) spel bara du har.
+:::
+
+## Sammanfattning
+
+Nu kan du organisera data i listor, tuples, dictionaries och sets – och en lista av dictionaries fungerar redan som en enkel "databas" i minnet för hela GameLog-backloggen. Nästa vecka tittar vi på **funktioner och moduler**, så att vi kan börja strukturera koden i återanvändbara byggblock i stället för att skriva allt i en enda lång fil.

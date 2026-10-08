@@ -1,0 +1,53 @@
+/*-- scss:defaults --*/
+
+// GameLog brand palette
+$primary: #7c3aed;      // violet — primary accent, links, headings
+$body-bg: #ffffff;
+$body-color: #1f2430;
+$link-color: $primary;
+
+// Headings
+$headings-font-weight: 700;
+
+// Callout colors — remapped to the GameLog palette while keeping
+// the semantic meaning (note / tip / warning / important) intact
+$callout-color-note: #7c3aed;       // violet   — "Veckans mål"
+$callout-color-tip: #10b981;        // emerald  — tips & good habits
+$callout-color-warning: #f59e0b;    // amber    — watch out for this
+$callout-color-important: #0d9488;  // teal     — exercises
+$callout-color-caution: #f97316;    // orange   — unused so far
+
+// Code blocks
+$code-bg: #f5f3ff;
+$code-color: #6d28d9;
+
+/*-- scss:rules --*/
+
+// Slightly rounder, punchier callouts
+div.callout {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+div.callout-important .callout-header {
+  font-weight: 700;
+}
+
+// Section headings get a bit more presence
+h2 {
+  border-bottom: 2px solid rgba($primary, 0.15);
+  padding-bottom: 0.3rem;
+  margin-top: 2.5rem;
+}
+
+// Inline code
+code {
+  border-radius: 4px;
+}
+
+// Table styling for the quick-reference tables
+table {
+  th {
+    background-color: rgba($primary, 0.08);
+  }
+}

@@ -1,0 +1,178 @@
+---
+title: "Vecka 12: Komplett CRUD-API i minnet"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Allt vi lärt oss, i ett enda API
+
+Den här veckan har inget nytt koncept — i stället sätter vi ihop allt från del 3 till ett komplett **CRUD-API** (Create, Read, Update, Delete) för spel. Det här är sista veckan innan vi ersätter minneslagringen med en riktig databas, så det är värt att bygga det här ordentligt.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- bygga alla fyra CRUD-operationer för en resurs
+- returnera korrekta statuskoder för varje situation
+- hantera "hittades inte"-fall med `HTTPException`
+- strukturera en komplett router från grunden
+:::
+
+## 1. Statuskoder, mer i detalj
+
+| Operation | Lyckad statuskod | Vanligt fel |
+|---|---|---|
+| `GET` (lista) | `200 OK` | — |
+| `GET` (en post) | `200 OK` | `404 Not Found` |
+| `POST` (skapa) | `201 Created` | `422 Unprocessable Entity` (valideringsfel, sköts automatiskt) |
+| `PUT` (uppdatera) | `200 OK` | `404 Not Found` |
+| `DELETE` (ta bort) | `204 No Content` | `404 Not Found` |
+
+## 2. HTTPException — rätt sätt att signalera fel
+
+```python
+from fastapi import APIRouter, HTTPException
+
+router = APIRouter(prefix="/games", tags=["games"])
+
+@router.get("/{game_id}")
+def get_game(game_id: int):
+    for game in games_db:
+        if game["id"] == game_id:
+            return game
+    raise HTTPException(status_code=404, detail="Game not found")
+```
+
+`HTTPException` avbryter endpointen direkt och skickar rätt statuskod och felmeddelande som JSON till klienten — mycket bättre än att bara returnera `{"error": "..."}` med `200 OK`, vilket skulle lura klienten att tro att allt gick bra.
+
+## 3. Hela CRUD-API:et för spel
+
+```python
+# routers/games.py
+from fastapi import APIRouter, HTTPException, status
+from models import GameCreate, GameOut, GameUpdate
+
+router = APIRouter(prefix="/games", tags=["games"])
+
+games_db: list[dict] = []
+next_id = 1
+
+
+@router.get("/", response_model=list[GameOut])
+def get_games():
+    return games_db
+
+
+@router.get("/{game_id}", response_model=GameOut)
+def get_game(game_id: int):
+    game = _find_game_or_404(game_id)
+    return game
+
+
+@router.post("/", response_model=GameOut, status_code=status.HTTP_201_CREATED)
+def create_game(game: GameCreate):
+    global next_id
+    new_game = {"id": next_id, **game.model_dump()}
+    games_db.append(new_game)
+    next_id += 1
+    return new_game
+
+
+@router.put("/{game_id}", response_model=GameOut)
+def update_game(game_id: int, updated_game: GameUpdate):
+    game = _find_game_or_404(game_id)
+    game.update(updated_game.model_dump())
+    return game
+
+
+@router.delete("/{game_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_game(game_id: int):
+    game = _find_game_or_404(game_id)
+    games_db.remove(game)
+
+
+def _find_game_or_404(game_id: int) -> dict:
+    for game in games_db:
+        if game["id"] == game_id:
+            return game
+    raise HTTPException(status_code=404, detail="Game not found")
+```
+
+Notera `_find_game_or_404` — en liten hjälpfunktion som gör att vi slipper upprepa samma sökning och felhantering i tre olika endpoints.
+
+::: {.callout-tip}
+## DRY — Don't Repeat Yourself
+Så fort du kopierar samma kodblock till en tredje endpoint, är det dags för en hjälpfunktion. Det är exakt samma princip som funktionerna vi skrev i vecka 3, tillämpad på router-kod.
+:::
+
+## 4. GameUpdate — en tredje Pydantic-modell
+
+```python
+# models.py
+from pydantic import BaseModel
+from typing import Optional
+
+class GameUpdate(BaseModel):
+    title: Optional[str] = None
+    platform: Optional[str] = None
+    rating: Optional[float] = None
+```
+
+Alla fält är valfria här — en `PUT`/`PATCH`-request ska kunna uppdatera bara de fält användaren faktiskt skickar in.
+
+::: {.callout-warning}
+## PUT vs PATCH
+Strikt REST-konvention säger att `PUT` ska ersätta *hela* resursen (alla fält krävs), medan `PATCH` uppdaterar delvis (alla fält valfria). I praktiken använder många API:er `PUT` för båda för enkelhetens skull — vilket vi gör här också. Var medveten om skillnaden om du bygger API:er i verkliga projekt.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Komplett games-router
+Bygg klart hela `games`-routern enligt exemplet ovan, med alla fyra CRUD-operationer och korrekta statuskoder.
+:::
+
+::: {.callout-important}
+## Övning 2 – Testa alla fel
+Testa i `/docs`: hämta ett spel som inte finns, uppdatera ett som inte finns, ta bort ett som inte finns. Kontrollera att alla ger `404`.
+:::
+
+::: {.callout-important}
+## Övning 3 – Samma sak för players
+Bygg en komplett CRUD-router för `players`, med samma mönster (`PlayerCreate`, `PlayerOut`, `PlayerUpdate`, `_find_player_or_404`).
+:::
+
+::: {.callout-important}
+## Övning 4 – Validering vid uppdatering
+Se till att `rating` i `GameUpdate` fortfarande valideras (1–10) om den skickas med, trots att fältet är valfritt.
+:::
+
+::: {.callout-important}
+## Övning 5 – Förhindra dubbletter
+Lägg till en kontroll i `create_game` som returnerar `HTTPException(400)` om ett spel med exakt samma titel redan finns i `games_db`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Statistik-endpoint
+Lägg till en `GET /games/stats`-endpoint som returnerar antal spel, genomsnittligt betyg och antal per plattform.
+:::
+
+::: {.callout-important}
+## Övning 7 – Filtrera och sortera
+Lägg till query-parametrar på `GET /games/` för att filtrera på `platform` och sortera resultatet efter `rating` (stigande eller fallande).
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – playthroughs komplett
+Bygg en komplett CRUD-router för `playthroughs`, som refererar till `game_id` och `player_id`. Kontrollera i `create_playthrough` att både spelet och spelaren faktiskt finns innan playthrough:en skapas — annars `404`.
+:::
+
+## Sammanfattning
+
+GameLog har nu ett komplett, robust CRUD-API för spel (och gärna spelare/playthroughs om du gjort utmaningarna) — med rätt statuskoder och tydlig felhantering. Nästa vecka börjar **del 5: databaser**, där vi lämnar minneslagringen bakom oss för gott och lär oss grunderna i relationsdatabaser och SQL.

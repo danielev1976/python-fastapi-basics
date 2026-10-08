@@ -1,0 +1,91 @@
+---
+title: "GameLog"
+subtitle: "Python från grunden — bygg ditt eget API för spelbackloggen"
+format:
+  html:
+    toc: false
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+::: {.callout-note}
+## Om kursen
+Den här kursen lär dig Python från grunden genom att bygga **GameLog** — en applikation där du kan hålla koll på vilka spel du äger, vilka du har spelat, och vad du tyckte om dem. Vi börjar med de mest grundläggande byggstenarna i Python och bygger stegvis vidare, tills GameLog blivit ett riktigt API kopplat till en databas.
+
+18 veckor, en 2,5-timmarslektion per vecka.
+:::
+
+## Vad du kommer kunna när kursen är klar
+
+Vid kursens slut har du byggt ett fullständigt REST-API i **FastAPI**, med en riktig databas i botten via **SQLAlchemy**, strukturerat med **objektorienterad programmering**. Du kommer ha grundläggande kunskaper i:
+
+- Python-syntax, datastrukturer och kontrollflöde
+- objektorienterad programmering (klasser, arv, komposition)
+- hur webbens API:er fungerar och hur man bygger sina egna med FastAPI
+- hur relationsdatabaser fungerar och hur man kopplar dem till ett API
+- grundläggande autentisering och testning
+
+## Kursens sex delar
+
+| Del | Veckor | Innehåll |
+|---|---|---|
+| **1. Python-grunderna** | 1–4 | Installation, variabler, kontrollflöde, datastrukturer, funktioner, felhantering |
+| **2. Objektorienterad programmering** | 5–8 | Klasser, objekt, inkapsling, arv, dataclasses |
+| **3. API:er och FastAPI** | 9–11 | HTTP-grunder, FastAPI, Pydantic, routers |
+| **4. Bygga API:et** | 12 | CRUD i minnet, utan databas |
+| **5. Databaser** | 13–16 | SQL, SQLAlchemy, koppla FastAPI till en riktig databas |
+| **6. Sista biten & projekt** | 17–18 | Autentisering, testning, avslutande projekt |
+
+## Lektioner
+
+::: {.callout-tip}
+## Del 1 — Python-grunderna
+- [Vecka 1: Kom igång med Python](vecka1.qmd)
+- [Vecka 2: Datastrukturer](vecka2.qmd)
+- [Vecka 3: Funktioner och moduler](vecka3.qmd)
+- [Vecka 4: Felhantering och filer](vecka4.qmd)
+:::
+
+::: {.callout-tip}
+## Del 2 — Objektorienterad programmering
+- [Vecka 5: Klasser och objekt](vecka5.qmd)
+- [Vecka 6: Inkapsling och komposition](vecka6.qmd)
+- [Vecka 7: Arv och polymorfism](vecka7.qmd)
+- [Vecka 8: Dataclasses och moderna idiom](vecka8.qmd)
+:::
+
+::: {.callout-tip}
+## Del 3 — API:er och FastAPI
+- [Vecka 9: HTTP-grunder och första FastAPI-appen](vecka9.qmd)
+- [Vecka 10: Pydantic-modeller](vecka10.qmd)
+- [Vecka 11: Projektstruktur och routers](vecka11.qmd)
+:::
+
+::: {.callout-tip}
+## Del 4 — Bygga API:et
+- [Vecka 12: CRUD-API i minnet](vecka12.qmd)
+:::
+
+::: {.callout-tip}
+## Del 5 — Databaser
+- [Vecka 13: Relationsdatabaser och SQL](vecka13.qmd)
+- [Vecka 14: SQLAlchemy ORM](vecka14.qmd)
+- [Vecka 15: Koppla FastAPI till databasen](vecka15.qmd)
+- [Vecka 16: Fördjupning och buffertvecka](vecka16.qmd)
+:::
+
+::: {.callout-tip}
+## Del 6 — Sista biten och projekt
+- [Vecka 17: Autentisering och validering](vecka17.qmd)
+- [Vecka 18: Testning och avslutande projekt](vecka18.qmd)
+:::
+
+## Så jobbar vi
+
+::: {.callout-warning}
+## Innan du börjar
+Du behöver Python 3.11 eller senare installerat. Allt du behöver för uppsättningen finns i [Vecka 1](vecka1.qmd).
+:::
+
+Instruktionerna genom hela kursen är skrivna på svenska, men all kod — variabelnamn, funktionsnamn och kommentarer — skrivs på engelska, precis som i den riktiga programmeringsvärlden. Varje vecka avslutas med flera övningar, ofta med en eller två extra utmaningar för dig som vill ha mer att bita i.

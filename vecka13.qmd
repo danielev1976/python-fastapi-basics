@@ -1,0 +1,194 @@
+---
+title: "Vecka 13: Relationsdatabaser och SQL"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Data som överlever på riktigt
+
+Hittills har GameLogs data legat i en Python-lista — försvinner varje gång servern startas om. Den här veckan lämnar vi minneslagring bakom och lär oss grunderna i **relationsdatabaser** och **SQL**, innan vi kopplar ihop allt med FastAPI nästa vecka.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- förklara tabeller, rader, kolumner, primärnycklar och främmande nycklar
+- skriva grundläggande SQL: `CREATE TABLE`, `INSERT`, `SELECT`, `UPDATE`, `DELETE`
+- förstå hur `JOIN` kopplar ihop data från flera tabeller
+- köra SQL mot en SQLite-databas från Python
+:::
+
+## 1. Tabeller, rader och kolumner
+
+En relationsdatabas lagrar data i tabeller — precis som ett kalkylblad. Varje **rad** är en post (t.ex. ett spel), varje **kolumn** är ett attribut (titel, plattform, betyg).
+
+| id | title | platform | rating |
+|---|---|---|---|
+| 1 | Hades | PC | 9 |
+| 2 | Celeste | Switch | 10 |
+
+## 2. Primärnycklar och främmande nycklar
+
+- En **primärnyckel** (`PRIMARY KEY`) identifierar varje rad unikt — nästan alltid `id`.
+- En **främmande nyckel** (`FOREIGN KEY`) kopplar en rad i en tabell till en rad i en annan. En `playthroughs`-tabell behöver veta *vilket* spel och *vilken* spelare den hör till.
+
+```
+games              players            playthroughs
+---------          ---------          -----------------
+id (PK)            id (PK)            id (PK)
+title              name               game_id (FK -> games.id)
+platform                              player_id (FK -> players.id)
+rating                                hours_played
+```
+
+Det här är exakt samma relation vi byggde med komposition i vecka 6 (`Playthrough` innehåller ett `Game` och en `Player`) — nu uttryckt som databastabeller.
+
+## 3. CREATE TABLE
+
+```sql
+CREATE TABLE games (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    rating REAL
+);
+
+CREATE TABLE players (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE playthroughs (
+    id INTEGER PRIMARY KEY,
+    game_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL,
+    hours_played REAL DEFAULT 0,
+    completed INTEGER DEFAULT 0,
+    FOREIGN KEY (game_id) REFERENCES games(id),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
+```
+
+## 4. INSERT, SELECT, UPDATE, DELETE
+
+```sql
+-- Lägg till data
+INSERT INTO games (title, platform, rating) VALUES ('Hades', 'PC', 9);
+INSERT INTO games (title, platform, rating) VALUES ('Celeste', 'Switch', 10);
+
+-- Hämta data
+SELECT * FROM games;
+SELECT title, rating FROM games WHERE rating >= 9;
+SELECT * FROM games ORDER BY rating DESC;
+
+-- Uppdatera data
+UPDATE games SET rating = 10 WHERE title = 'Hades';
+
+-- Ta bort data
+DELETE FROM games WHERE id = 2;
+```
+
+::: {.callout-warning}
+## Glöm aldrig WHERE
+`UPDATE games SET rating = 0;` utan `WHERE` uppdaterar **alla** rader i tabellen. Samma sak gäller `DELETE FROM games;` — den tömmer hela tabellen. Dubbelkolla alltid `WHERE`-satsen innan du kör `UPDATE`/`DELETE` mot riktig data.
+:::
+
+## 5. JOIN — koppla ihop tabeller
+
+```sql
+SELECT playthroughs.hours_played, games.title, players.name
+FROM playthroughs
+JOIN games ON playthroughs.game_id = games.id
+JOIN players ON playthroughs.player_id = players.id;
+```
+
+`JOIN` slår ihop rader från flera tabeller baserat på en gemensam koppling (här: `game_id`/`player_id` mot respektive `id`). Resultatet blir en tabell med information från alla tre tabellerna kombinerat.
+
+## 6. SQLite från Python
+
+Python har inbyggt stöd för SQLite via `sqlite3` — perfekt för att öva innan vi använder ett ORM nästa vecka.
+
+```python
+import sqlite3
+
+connection = sqlite3.connect("gamelog.db")
+cursor = connection.cursor()
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS games (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        rating REAL
+    )
+""")
+
+cursor.execute(
+    "INSERT INTO games (title, platform, rating) VALUES (?, ?, ?)",
+    ("Hades", "PC", 9),
+)
+connection.commit()
+
+cursor.execute("SELECT * FROM games")
+for row in cursor.fetchall():
+    print(row)
+
+connection.close()
+```
+
+::: {.callout-warning}
+## Parametriserade queries
+Lägg märke till `?`-tecknen i `INSERT`-satsen, med värdena skickade separat i en tuple. Skriv **aldrig** `f"INSERT INTO games VALUES ({title})"` med värden direkt i strängen — det öppnar för SQL-injection, en av de vanligaste säkerhetsbristerna i webbappar. Parametriserade queries som ovan skyddar automatiskt mot det.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Skapa tabellerna
+Skriv `CREATE TABLE`-satser för `games`, `players` och `playthroughs` enligt strukturen ovan, med rätt primär- och främmande nycklar.
+:::
+
+::: {.callout-important}
+## Övning 2 – Fyll på med data
+Skriv `INSERT`-satser för minst 5 spel, 2 spelare, och 4 playthroughs som kopplar ihop dem.
+:::
+
+::: {.callout-important}
+## Övning 3 – Enkla SELECT
+Skriv queries för: alla spel med betyg över 8, alla spel sorterade efter titel, det spel med högst betyg.
+:::
+
+::: {.callout-important}
+## Övning 4 – UPDATE och DELETE
+Skriv en `UPDATE` som ändrar betyget på ett specifikt spel, och en `DELETE` som tar bort en specifik playthrough. Var noga med `WHERE`.
+:::
+
+::: {.callout-important}
+## Övning 5 – Din första JOIN
+Skriv en query som listar varje playthrough med spelets titel och spelarens namn, med `JOIN`.
+:::
+
+::: {.callout-important}
+## Övning 6 – SQLite från Python
+Skriv ett Python-program som skapar `games`-tabellen i en SQLite-fil, lägger till tre spel, och skriver ut alla rader.
+:::
+
+::: {.callout-important}
+## Övning 7 – Sökning med parametrar
+Skriv en Python-funktion `find_games_by_platform(platform)` som kör en parametriserad `SELECT ... WHERE platform = ?`-query och returnerar resultaten.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Statistik med SQL
+Skriv en query som räknar ut genomsnittligt betyg per plattform, med `GROUP BY platform` och `AVG(rating)`.
+:::
+
+## Sammanfattning
+
+Nu förstår du grunderna i hur relationsdatabaser lagrar och kopplar ihop data, och kan skriva SQL för att skapa, läsa, uppdatera och ta bort data — inklusive `JOIN` mellan flera tabeller. Nästa vecka höjer vi abstraktionsnivån med **SQLAlchemy**, ett ORM som låter oss jobba med databasen genom Python-klasser i stället för att skriva rå SQL för hand överallt.

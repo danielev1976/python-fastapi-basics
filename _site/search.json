@@ -1,0 +1,1485 @@
+[
+  {
+    "objectID": "vecka9.html",
+    "href": "vecka9.html",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "",
+    "text": "Hittills har GameLog varit ett program som körs i din terminal. Den här veckan tar vi det stora steget: GameLog blir ett API — tillgängligt över nätverket, redo att pratas med från en webbläsare, en mobilapp, eller ett annat program.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nförklara grunderna i HTTP: metoder, statuskoder, JSON\ninstallera och starta en FastAPI-app\nskapa endpoints med path- och query-parametrar\nutforska ditt API med den automatiska Swagger-dokumentationen",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#dags-att-gå-ut-på-nätet",
+    "href": "vecka9.html#dags-att-gå-ut-på-nätet",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "",
+    "text": "Hittills har GameLog varit ett program som körs i din terminal. Den här veckan tar vi det stora steget: GameLog blir ett API — tillgängligt över nätverket, redo att pratas med från en webbläsare, en mobilapp, eller ett annat program.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nförklara grunderna i HTTP: metoder, statuskoder, JSON\ninstallera och starta en FastAPI-app\nskapa endpoints med path- och query-parametrar\nutforska ditt API med den automatiska Swagger-dokumentationen",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#hur-webben-pratar-http",
+    "href": "vecka9.html#hur-webben-pratar-http",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "1. Hur webben pratar: HTTP",
+    "text": "1. Hur webben pratar: HTTP\nVarje gång du besöker en webbsida skickar din webbläsare en HTTP-request till en server, och får en HTTP-response tillbaka. Ett API fungerar likadant, förutom att svaret oftast är JSON-data i stället för en webbsida.\n\nHTTP-metoder\n\n\n\nMetod\nAnvänds för\n\n\n\n\nGET\nhämta data\n\n\nPOST\nskapa något nytt\n\n\nPUT\nuppdatera något befintligt (hela objektet)\n\n\nPATCH\nuppdatera något befintligt (delvis)\n\n\nDELETE\nta bort något\n\n\n\n\n\nStatuskoder\n\n\n\nKod\nBetyder\n\n\n\n\n200 OK\nallt gick bra\n\n\n201 Created\nnågot skapades\n\n\n400 Bad Request\nklienten skickade felaktig data\n\n\n404 Not Found\nresursen finns inte\n\n\n500 Internal Server Error\nnågot gick fel på servern\n\n\n\n\n\n\n\n\n\nTipsTesta själv\n\n\n\nÖppna nätverksfliken (Network) i webbläsarens utvecklarverktyg och ladda om en sida. Du ser exakt de här HTTP-requesterna i praktiken.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#installera-fastapi",
+    "href": "vecka9.html#installera-fastapi",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "2. Installera FastAPI",
+    "text": "2. Installera FastAPI\npip install fastapi uvicorn\nFastAPI är själva ramverket. uvicorn är servern som faktiskt kör din app och lyssnar efter requests.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#din-första-endpoint",
+    "href": "vecka9.html#din-första-endpoint",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "3. Din första endpoint",
+    "text": "3. Din första endpoint\nSkapa main.py:\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Welcome to the GameLog API\"}\nStarta servern:\nuvicorn main:app --reload\n\nmain = filnamnet (main.py)\napp = variabeln som innehåller FastAPI-instansen\n--reload = servern startar om automatiskt när du sparar ändringar\n\nÖppna http://127.0.0.1:8000 i webbläsaren — du ser JSON-svaret direkt.\n\n\n\n\n\n\nTipsAutomatisk dokumentation\n\n\n\nGå till http://127.0.0.1:8000/docs för att se Swagger UI — en interaktiv sida där du kan testa alla dina endpoints direkt i webbläsaren. FastAPI genererar den helt automatiskt utifrån din kod.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#fler-endpoints",
+    "href": "vecka9.html#fler-endpoints",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "4. Fler endpoints",
+    "text": "4. Fler endpoints\ngames = [\n    {\"id\": 1, \"title\": \"Hades\", \"rating\": 9},\n    {\"id\": 2, \"title\": \"Celeste\", \"rating\": 10},\n]\n\n@app.get(\"/games\")\ndef get_games():\n    return games\nGå till http://127.0.0.1:8000/games — du ser listan som JSON.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#path-parametrar",
+    "href": "vecka9.html#path-parametrar",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "5. Path-parametrar",
+    "text": "5. Path-parametrar\nEn del av URL:en kan vara dynamisk, t.ex. ett spel-ID.\n@app.get(\"/games/{game_id}\")\ndef get_game(game_id: int):\n    for game in games:\n        if game[\"id\"] == game_id:\n            return game\n    return {\"error\": \"Game not found\"}\nhttp://127.0.0.1:8000/games/1 returnerar Hades. game_id: int gör att FastAPI automatiskt konverterar och validerar att det faktiskt är ett heltal — skriver du /games/hello får du ett tydligt valideringsfel helt gratis.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#query-parametrar",
+    "href": "vecka9.html#query-parametrar",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "6. Query-parametrar",
+    "text": "6. Query-parametrar\nParametrar efter ? i URL:en, t.ex. för filtrering.\n@app.get(\"/games/search\")\ndef search_games(platform: str = None, min_rating: float = 0):\n    results = games\n    if platform:\n        results = [g for g in results if g.get(\"platform\") == platform]\n    results = [g for g in results if g[\"rating\"] &gt;= min_rating]\n    return results\nhttp://127.0.0.1:8000/games/search?min_rating=9 returnerar bara spel med minst betyg 9.\n\n\n\n\n\n\nVarningOrdning spelar roll\n\n\n\n/games/search måste definieras före /games/{game_id} i koden om du har båda, annars tolkar FastAPI \"search\" som ett game_id-värde. Vi löser det här mer strukturerat med routers i vecka 11.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#övningar",
+    "href": "vecka9.html#övningar",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Din första app\n\n\n\nInstallera FastAPI och uvicorn. Skapa en app med en /-endpoint som returnerar {\"message\": \"Welcome to GameLog\"}. Starta servern och kontrollera i webbläsaren.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Utforska /docs\n\n\n\nGå till /docs i din körande app. Testa att anropa din endpoint direkt därifrån (“Try it out”).\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Lista med spel\n\n\n\nSkapa en lista med minst 5 spel (dictionaries med id, title, platform, rating) och en /games-endpoint som returnerar hela listan.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Hämta ett specifikt spel\n\n\n\nSkapa en /games/{game_id}-endpoint som returnerar rätt spel baserat på ID, eller ett felmeddelande om det inte finns.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Query-parameter för plattform\n\n\n\nSkapa en /games/by-platform-endpoint med en query-parameter platform som filtrerar listan.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Kombinerade filter\n\n\n\nUtöka övning 5 med ytterligare en query-parameter min_rating (default 0), och kombinera båda filtren.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Spelare-endpoint\n\n\n\nSkapa en egen lista med spelare, och en /players/{player_id}-endpoint på samma sätt som för spel.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Statistik-endpoint\n\n\n\nSkapa en /games/stats-endpoint som returnerar antal spel, genomsnittligt betyg, och högst rankade spel — allt beräknat i endpointen från listan med spel.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka9.html#sammanfattning",
+    "href": "vecka9.html#sammanfattning",
+    "title": "Vecka 9: HTTP-grunder och din första FastAPI-app",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nGameLog är nu ett riktigt API som svarar på HTTP-requests, med både path- och query-parametrar. Nästa vecka fördjupar vi oss i Pydantic-modeller — hur vi validerar och strukturerar data som skickas till API:et (t.ex. när ett nytt spel skapas), inte bara det vi skickar tillbaka.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 9: HTTP-grunder och din första FastAPI-app"
+    ]
+  },
+  {
+    "objectID": "vecka7.html",
+    "href": "vecka7.html",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "",
+    "text": "Förra veckan byggde vi “has-a”-relationer med komposition. Den här veckan handlar om “is-a”-relationer: ett DigitalGame är ett Game, men med lite extra egenskaper (t.ex. filstorlek och nedladdningslänk). I stället för att skriva om hela Game-klassen kan vi ärva från den.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nskapa en subklass som ärver från en basklass\nanvända super() för att återanvända basklassens kod\noverride:a metoder i en subklass\nförstå och använda polymorfism\nkontrollera typer med isinstance()",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#is-a-relationer",
+    "href": "vecka7.html#is-a-relationer",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "",
+    "text": "Förra veckan byggde vi “has-a”-relationer med komposition. Den här veckan handlar om “is-a”-relationer: ett DigitalGame är ett Game, men med lite extra egenskaper (t.ex. filstorlek och nedladdningslänk). I stället för att skriva om hela Game-klassen kan vi ärva från den.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nskapa en subklass som ärver från en basklass\nanvända super() för att återanvända basklassens kod\noverride:a metoder i en subklass\nförstå och använda polymorfism\nkontrollera typer med isinstance()",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#grundläggande-arv",
+    "href": "vecka7.html#grundläggande-arv",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "1. Grundläggande arv",
+    "text": "1. Grundläggande arv\nclass Game:\n    def __init__(self, title, rating):\n        self.title = title\n        self.rating = rating\n\n    def describe(self):\n        return f\"{self.title} - {self.rating}/10\"\n\nclass DigitalGame(Game):\n    def __init__(self, title, rating, file_size_gb):\n        super().__init__(title, rating)   # återanvänd Game.__init__\n        self.file_size_gb = file_size_gb\n\nhades = DigitalGame(\"Hades\", 9, file_size_gb=15)\n\nprint(hades.title)          # ärvt från Game\nprint(hades.describe())     # ärvt från Game\nprint(hades.file_size_gb)   # unikt för DigitalGame\n\nclass DigitalGame(Game): betyder “DigitalGame ärver från Game”.\nsuper().__init__(...) anropar basklassens konstruktor, så vi slipper skriva self.title = title igen.\nDigitalGame får automatiskt tillgång till alla metoder och attribut från Game.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#fler-subklasser",
+    "href": "vecka7.html#fler-subklasser",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "2. Fler subklasser",
+    "text": "2. Fler subklasser\nclass PhysicalGame(Game):\n    def __init__(self, title, rating, shelf_location):\n        super().__init__(title, rating)\n        self.shelf_location = shelf_location\n\nceleste = DigitalGame(\"Celeste\", 10, file_size_gb=1)\nzelda = PhysicalGame(\"Zelda: Tears of the Kingdom\", 9, shelf_location=\"Hyllan, rad 2\")\n\nprint(celeste.describe())\nprint(zelda.describe())\nBåda DigitalGame och PhysicalGame är Game-objekt, och kan användas överallt en Game förväntas.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#override-skriva-om-en-metod",
+    "href": "vecka7.html#override-skriva-om-en-metod",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "3. Override — skriva om en metod",
+    "text": "3. Override — skriva om en metod\nEn subklass kan ersätta en metod från basklassen med sin egen version.\nclass DigitalGame(Game):\n    def __init__(self, title, rating, file_size_gb):\n        super().__init__(title, rating)\n        self.file_size_gb = file_size_gb\n\n    def describe(self):   # override av Game.describe()\n        base_description = super().describe()   # återanvänd basklassens version\n        return f\"{base_description} [Digital, {self.file_size_gb}GB]\"\n\nclass PhysicalGame(Game):\n    def __init__(self, title, rating, shelf_location):\n        super().__init__(title, rating)\n        self.shelf_location = shelf_location\n\n    def describe(self):\n        base_description = super().describe()\n        return f\"{base_description} [Physical, {self.shelf_location}]\"\n\nhades = DigitalGame(\"Hades\", 9, file_size_gb=15)\nzelda = PhysicalGame(\"Zelda\", 9, shelf_location=\"Hyllan A2\")\n\nprint(hades.describe())   # Hades - 9/10 [Digital, 15GB]\nprint(zelda.describe())   # Zelda - 9/10 [Physical, Hyllan A2]",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#polymorfism",
+    "href": "vecka7.html#polymorfism",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "4. Polymorfism",
+    "text": "4. Polymorfism\nPolymorfism betyder att samma metodanrop (describe()) beter sig olika beroende på vilket objekts typ det gäller — utan att den anropande koden behöver bry sig om exakt vilken subklass det är.\nbacklog = [\n    DigitalGame(\"Hades\", 9, file_size_gb=15),\n    PhysicalGame(\"Zelda\", 9, shelf_location=\"Hyllan A2\"),\n    DigitalGame(\"Celeste\", 10, file_size_gb=1),\n]\n\nfor game in backlog:\n    print(game.describe())   # rätt version körs automatiskt för varje objekt\nLoopen vet inte (och behöver inte veta) om varje spel är digitalt eller fysiskt — den anropar bara describe(), och Python ser till att rätt version körs.\n\n\n\n\n\n\nTipsVarför är detta kraftfullt?\n\n\n\nUtan polymorfism hade vi behövt if isinstance(game, DigitalGame): ... elif isinstance(game, PhysicalGame): ... överallt vi vill beskriva ett spel. Med polymorfism sköter varje klass sitt eget beteende, och resten av koden blir enklare.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#isinstance-när-du-faktiskt-behöver-veta-typen",
+    "href": "vecka7.html#isinstance-när-du-faktiskt-behöver-veta-typen",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "5. isinstance() — när du faktiskt behöver veta typen",
+    "text": "5. isinstance() — när du faktiskt behöver veta typen\nIbland behöver du ändå kontrollera vilken typ ett objekt är.\nfor game in backlog:\n    if isinstance(game, DigitalGame):\n        print(f\"{game.title} takes up {game.file_size_gb}GB of storage\")\nisinstance(game, DigitalGame) returnerar True även om game egentligen är en subklass till DigitalGame — den är alltså smartare än att bara jämföra typer exakt.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#övningar",
+    "href": "vecka7.html#övningar",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Grundläggande arv\n\n\n\nSkapa en basklass Game med title och rating. Skapa en subklass DigitalGame med ett extra attribut download_size_gb. Skapa ett objekt och skriv ut alla attribut.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Ytterligare en subklass\n\n\n\nSkapa en subklass PhysicalGame med ett extra attribut condition (t.ex. \"Ny\", \"Begagnad\"). Skapa ett objekt och skriv ut det.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Override describe()\n\n\n\nLägg till en describe()-metod på Game, och override:a den i båda subklasserna så att de lägger till sin egen extra information (använd super().describe()).\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Polymorfism i praktiken\n\n\n\nSkapa en lista med en blandning av DigitalGame- och PhysicalGame-objekt. Loopa igenom listan och anropa describe() på varje, utan att skriva någon if-sats.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – isinstance\n\n\n\nUtgå från listan i övning 4. Räkna hur många av spelen som är DigitalGame respektive PhysicalGame, med isinstance().\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Player-hierarki\n\n\n\nSkapa en basklass Player med name. Skapa en subklass SpeedrunPlayer med ett extra attribut personal_best_time, och en metod describe() som visar namnet och bästa tiden.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Beräkning som skiljer sig per subklass\n\n\n\nGe Game en metod storage_footprint() som returnerar 0 (fysiska spel tar ingen hårddiskplats). Override:a den i DigitalGame så den returnerar file_size_gb/download_size_gb. Summera total lagringsplats för en lista av blandade spel.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Tre nivåer av arv\n\n\n\nSkapa Game → DigitalGame → SubscriptionGame (ett digitalt spel som ingår i en prenumerationstjänst, t.ex. Game Pass, med ett extra attribut service_name). Testa att super() fungerar korrekt genom hela kedjan, och att isinstance(sub_game, Game) är True.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka7.html#sammanfattning",
+    "href": "vecka7.html#sammanfattning",
+    "title": "Vecka 7: Arv och polymorfism",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu kan du modellera “is-a”-relationer med arv, återanvända kod med super(), och dra nytta av polymorfism för att skriva enklare kod som jobbar med olika typer på ett enhetligt sätt. Nästa vecka rundar vi av OOP-delen med dataclasses och moderna idiom — ett kortare och mer Pythoniskt sätt att skriva klasser, som dessutom förbereder oss perfekt för Pydantic-modellerna vi möter i FastAPI-delen.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 7: Arv och polymorfism"
+    ]
+  },
+  {
+    "objectID": "vecka4.html",
+    "href": "vecka4.html",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "",
+    "text": "Hittills har vi antagit att allt går som planerat: användaren skriver rätt saker, filer finns där de ska. Den här veckan lär vi oss hantera när saker går fel — och, minst lika viktigt, hur vi sparar GameLog-datan till en fil så att backloggen faktiskt finns kvar nästa gång programmet startas.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nfånga och hantera fel med try/except\nskapa egna undantag när det behövs\nläsa och skriva vanliga textfiler\nläsa och skriva JSON-data, för att spara GameLog permanent",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#sista-veckan-innan-vi-går-vidare-till-oop",
+    "href": "vecka4.html#sista-veckan-innan-vi-går-vidare-till-oop",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "",
+    "text": "Hittills har vi antagit att allt går som planerat: användaren skriver rätt saker, filer finns där de ska. Den här veckan lär vi oss hantera när saker går fel — och, minst lika viktigt, hur vi sparar GameLog-datan till en fil så att backloggen faktiskt finns kvar nästa gång programmet startas.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nfånga och hantera fel med try/except\nskapa egna undantag när det behövs\nläsa och skriva vanliga textfiler\nläsa och skriva JSON-data, för att spara GameLog permanent",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#när-saker-går-fel",
+    "href": "vecka4.html#när-saker-går-fel",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "1. När saker går fel",
+    "text": "1. När saker går fel\nTesta att köra det här:\nrating = int(input(\"Enter a rating (1-10): \"))\nSkriver användaren “tio” i stället för “10” kraschar programmet med ett ValueError. Ett krasch mitt i programmet är sällan vad vi vill ha.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#try-except",
+    "href": "vecka4.html#try-except",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "2. try / except",
+    "text": "2. try / except\ntry:\n    rating = int(input(\"Enter a rating (1-10): \"))\n    print(f\"You rated the game {rating}/10\")\nexcept ValueError:\n    print(\"That wasn't a valid number. Please enter digits only.\")\nKoden i try-blocket körs. Om ett fel av rätt typ uppstår, hoppar Python direkt till except-blocket i stället för att krascha.\n\nFlera except-block\nOlika typer av fel kan hanteras på olika sätt:\ngames = {\"Hades\": 9, \"Celeste\": 10}\n\ntry:\n    title = input(\"Which game do you want to check? \")\n    print(games[title])\nexcept KeyError:\n    print(\"That game isn't in your backlog.\")\nexcept Exception as error:\n    print(f\"Something unexpected happened: {error}\")\n\n\n\n\n\n\nTipsSpecifika fel före generella\n\n\n\nFånga alltid de specifika feltyperna (ValueError, KeyError, osv.) före ett generellt except Exception. Annars riskerar du att gömma buggar du egentligen borde upptäcka och åtgärda.\n\n\n\n\nelse och finally\ntry:\n    rating = int(input(\"Enter a rating: \"))\nexcept ValueError:\n    print(\"Invalid input.\")\nelse:\n    print(\"Great, that was a valid rating!\")   # körs bara om inget fel uppstod\nfinally:\n    print(\"Done checking the rating.\")          # körs alltid, fel eller inte",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#skapa-egna-undantag",
+    "href": "vecka4.html#skapa-egna-undantag",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "3. Skapa egna undantag",
+    "text": "3. Skapa egna undantag\nIbland vill vi signalera ett fel som är specifikt för vår egen domän.\ndef add_rating(rating):\n    if rating &lt; 1 or rating &gt; 10:\n        raise ValueError(\"Rating must be between 1 and 10\")\n    return rating\n\ntry:\n    add_rating(15)\nexcept ValueError as error:\n    print(f\"Could not add rating: {error}\")\nraise kastar ett undantag manuellt — precis som Python gör automatiskt vid t.ex. felaktig konvertering.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#läsa-och-skriva-textfiler",
+    "href": "vecka4.html#läsa-och-skriva-textfiler",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "4. Läsa och skriva textfiler",
+    "text": "4. Läsa och skriva textfiler\n# Skriva till en fil\nwith open(\"backlog.txt\", \"w\") as file:\n    file.write(\"Hades\\n\")\n    file.write(\"Celeste\\n\")\n    file.write(\"Hollow Knight\\n\")\n# Läsa från en fil\nwith open(\"backlog.txt\", \"r\") as file:\n    for line in file:\n        print(line.strip())   # strip() tar bort radbrytningen\n\n\n\n\n\n\nTipsVarför with?\n\n\n\nwith open(...) as file: ser till att filen stängs automatiskt, även om något går fel medan du läser eller skriver. Skriv alltid filhantering på det här sättet.\n\n\n\nLägga till i en befintlig fil\nwith open(\"backlog.txt\", \"a\") as file:   # \"a\" = append\n    file.write(\"Stardew Valley\\n\")\n\n\n\nLäge\nBetyder\n\n\n\n\n\"r\"\nläsa (filen måste finnas)\n\n\n\"w\"\nskriva, skriver över hela filen\n\n\n\"a\"\nskriva, lägger till på slutet",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#json-spara-riktig-data",
+    "href": "vecka4.html#json-spara-riktig-data",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "5. JSON — spara riktig data",
+    "text": "5. JSON — spara riktig data\nEn textfil rad för rad fungerar för enkla listor, men GameLog behöver spara strukturerad data (titel, plattform, betyg…). Då är JSON rätt verktyg — och det mappar nästan perfekt mot Pythons egna dictionaries och listor.\nimport json\n\ngames = [\n    {\"title\": \"Hades\", \"platform\": \"PC\", \"rating\": 9},\n    {\"title\": \"Celeste\", \"platform\": \"Switch\", \"rating\": 10},\n]\n\n# Skriva till en JSON-fil\nwith open(\"games.json\", \"w\") as file:\n    json.dump(games, file, indent=2)\n# Läsa från en JSON-fil\nwith open(\"games.json\", \"r\") as file:\n    loaded_games = json.load(file)\n\nprint(loaded_games)\nprint(type(loaded_games))   # &lt;class 'list'&gt;\n\n\n\n\n\n\nVarningjson.dump vs json.dumps\n\n\n\njson.dump(data, file) skriver direkt till en öppen fil. json.dumps(data) (med ett extra “s”) returnerar JSON som en sträng, praktiskt om du vill skicka datan vidare i stället för att spara den till disk. Vi kommer använda båda framöver.\n\n\n\nKombinera med felhantering\nFilen kanske inte finns första gången programmet körs — det ska vi hantera snyggt, inte krascha på:\ndef load_games(filename=\"games.json\"):\n    try:\n        with open(filename, \"r\") as file:\n            return json.load(file)\n    except FileNotFoundError:\n        print(\"No saved backlog found, starting with an empty one.\")\n        return []\n\ngames = load_games()",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#övningar",
+    "href": "vecka4.html#övningar",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Säker inmatning\n\n\n\nSkriv ett program som frågar användaren efter ett betyg med input(), konverterar det till int, och hanterar ValueError med ett vänligt felmeddelande i stället för en krasch.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Säker sökning\n\n\n\nUtgå från en dictionary games med några spel och betyg. Fråga användaren efter en titel och skriv ut betyget. Hantera KeyError om spelet inte finns.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Egen validering\n\n\n\nSkriv en funktion validate_rating(rating) som raise:ar ett ValueError om betyget inte är mellan 1 och 10. Testa funktionen med både ett giltigt och ett ogiltigt värde, och fånga felet med try/except.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Skriv din backlogg till en fil\n\n\n\nSkriv en lista med speltitlar till en textfil backlog.txt, en titel per rad.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Läs och räkna\n\n\n\nLäs backlog.txt från övning 4 och skriv ut hur många spel som finns i filen, samt själva listan.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Spara som JSON\n\n\n\nSkapa en lista med minst 3 spel-dictionaries (title, platform, rating). Spara den till games.json med json.dump.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Läs tillbaka och filtrera\n\n\n\nLäs games.json från övning 6 med json.load, och skriv ut bara titlarna på spel med rating &gt;= 8.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 – Robust inläsning\n\n\n\nSkriv en funktion load_games(filename) som läser en JSON-fil och returnerar en tom lista i stället för att krascha om filen inte finns (FileNotFoundError). Testa med både ett filnamn som finns och ett som inte finns.\n\n\n\n\n\n\n\n\nViktigtÖvning 9 (utmaning) – Lägg till och spara\n\n\n\nSkriv ett program som: (1) läser games.json om den finns, annars startar med en tom lista, (2) frågar användaren efter ett nytt spel (titel, plattform, betyg) med input(), (3) lägger till spelet i listan, och (4) sparar hela listan tillbaka till games.json.\n\n\n\n\n\n\n\n\nViktigtÖvning 10 (utmaning) – Felsäker meny\n\n\n\nBygg vidare på menyprogrammet från vecka 3. Se till att inget menyval kan krascha programmet — all input() som konverteras till tal ska vara omsluten av try/except.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka4.html#sammanfattning",
+    "href": "vecka4.html#sammanfattning",
+    "title": "Vecka 4: Felhantering och filer",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu klarar programmet av felaktig inmatning utan att krascha, och du kan spara och läsa in GameLog-datan som JSON — vilket betyder att backloggen faktiskt överlever mellan körningar. Det här är sista veckan i Python-grunderna. Nästa vecka börjar del 2: objektorienterad programmering, där vi modellerar Game, Player och Playthrough som riktiga klasser i stället för lösa dictionaries.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 4: Felhantering och filer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html",
+    "href": "vecka2.html",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "",
+    "text": "Förra veckan sparade vi ett spel i taget i egna variabler. Det fungerar dåligt när backloggen växer till tio, tjugo eller hundra spel. Den här veckan lär vi oss Pythons fyra viktigaste datastrukturer – verktygen som gör att vi kan lagra och organisera hela GameLog i minnet.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nanvända listor (list) för att lagra flera värden i ordning\nanvända tuples (tuple) för värden som inte ska ändras\nanvända dictionaries (dict) för att koppla ihop nycklar och värden\nanvända sets (set) för unika värden\nskriva enkla list comprehensions",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#från-enstaka-värden-till-samlingar",
+    "href": "vecka2.html#från-enstaka-värden-till-samlingar",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "",
+    "text": "Förra veckan sparade vi ett spel i taget i egna variabler. Det fungerar dåligt när backloggen växer till tio, tjugo eller hundra spel. Den här veckan lär vi oss Pythons fyra viktigaste datastrukturer – verktygen som gör att vi kan lagra och organisera hela GameLog i minnet.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nanvända listor (list) för att lagra flera värden i ordning\nanvända tuples (tuple) för värden som inte ska ändras\nanvända dictionaries (dict) för att koppla ihop nycklar och värden\nanvända sets (set) för unika värden\nskriva enkla list comprehensions",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#listor-list",
+    "href": "vecka2.html#listor-list",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "1. Listor (list)",
+    "text": "1. Listor (list)\nEn lista är en ordnad samling värden som kan ändras (den är mutable).\nbacklog = [\"Hades\", \"Celeste\", \"Hollow Knight\"]\n\nprint(backlog[0])        # Hades\nprint(backlog[-1])       # Hollow Knight (sista elementet)\nprint(len(backlog))      # 3\n\nLägga till och ta bort\nbacklog.append(\"Stardew Valley\")     # lägg till sist\nbacklog.remove(\"Celeste\")            # ta bort ett specifikt värde\nbacklog.insert(0, \"Elden Ring\")      # lägg till på en specifik plats\n\nprint(backlog)\n\n\nSlicing\ntop_three = backlog[0:3]   # de tre första spelen\nlast_two = backlog[-2:]    # de två sista spelen\n\n\nLoopa över en lista\nfor game in backlog:\n    print(\"-\", game)\n\n\n\n\n\n\nTipsenumerate()\n\n\n\nBehöver du både index och värde i loopen, använd enumerate():\nfor index, game in enumerate(backlog):\n    print(index + 1, game)",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#tuples-tuple",
+    "href": "vecka2.html#tuples-tuple",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "2. Tuples (tuple)",
+    "text": "2. Tuples (tuple)\nEn tuple liknar en lista, men går inte att ändra efter att den skapats (den är immutable). Bra för värden som hör ihop och som ska förbli fasta, t.ex. koordinater eller en release-info.\nrelease_info = (\"The Legend of Zelda: Tears of the Kingdom\", 2023)\n\ntitle, year = release_info   # unpacking\nprint(title)\nprint(year)\nOm du försöker ändra en tuple får du ett fel:\nrelease_info[0] = \"Nytt namn\"   # TypeError!\n\n\n\n\n\n\nTipsVarför använda tuples?\n\n\n\nTuples signalerar till andra som läser koden: “det här värdet ska inte ändras”. De är också snabbare och tar mindre minne än listor.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#dictionaries-dict",
+    "href": "vecka2.html#dictionaries-dict",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "3. Dictionaries (dict)",
+    "text": "3. Dictionaries (dict)\nEn dictionary kopplar ihop nycklar med värden – perfekt för att representera ett spel med flera egenskaper.\ngame = {\n    \"title\": \"Hollow Knight\",\n    \"platform\": \"Switch\",\n    \"rating\": 9.5,\n    \"completed\": True,\n}\n\nprint(game[\"title\"])         # Hollow Knight\nprint(game.get(\"rating\"))    # 9.5\n\nLägga till, ändra och ta bort\ngame[\"hours_played\"] = 42          # lägg till ny nyckel\ngame[\"rating\"] = 10                # ändra befintligt värde\ndel game[\"hours_played\"]           # ta bort en nyckel\n\n\nLoopa över en dictionary\nfor key, value in game.items():\n    print(key, \"-&gt;\", value)\n\n\nEn lista av dictionaries – hela backloggen\nDet här är mönstret vi kommer använda genom stora delar av kursen, innan vi har en riktig databas:\ngames = [\n    {\"title\": \"Hades\", \"platform\": \"PC\", \"rating\": 9},\n    {\"title\": \"Celeste\", \"platform\": \"Switch\", \"rating\": 10},\n    {\"title\": \"Hollow Knight\", \"platform\": \"Switch\", \"rating\": 9.5},\n]\n\nfor game in games:\n    print(game[\"title\"], \"-\", game[\"rating\"])",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#sets-set",
+    "href": "vecka2.html#sets-set",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "4. Sets (set)",
+    "text": "4. Sets (set)\nEn set lagrar unika värden, utan ordning och utan dubbletter. Bra för t.ex. alla plattformar du äger spel på.\nplatforms = {\"PC\", \"Switch\", \"PlayStation\", \"PC\"}\nprint(platforms)          # dubbletten \"PC\" försvinner automatiskt\nprint(len(platforms))     # 3\nplatforms.add(\"Xbox\")\nplatforms.discard(\"PlayStation\")\nSets är också praktiska för att jämföra samlingar:\nmy_platforms = {\"PC\", \"Switch\"}\nfriend_platforms = {\"Switch\", \"Xbox\"}\n\nshared = my_platforms & friend_platforms   # gemensamma plattformar\nall_platforms = my_platforms | friend_platforms  # alla, utan dubbletter",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#list-comprehensions",
+    "href": "vecka2.html#list-comprehensions",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "5. List comprehensions",
+    "text": "5. List comprehensions\nEtt kortare sätt att skapa en ny lista utifrån en annan.\ntitles = [game[\"title\"] for game in games]\nprint(titles)   # ['Hades', 'Celeste', 'Hollow Knight']\nMed villkor:\ntop_rated = [game[\"title\"] for game in games if game[\"rating\"] &gt;= 9.5]\nprint(top_rated)\n\n\n\n\n\n\nTipsLäsbarhet framför allt\n\n\n\nList comprehensions är smidiga för korta, enkla uttryck. Blir raden svår att läsa – använd en vanlig for-loop i stället. Kod som är lätt att förstå vinner alltid över kod som är kort.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#datastrukturer-en-snabb-jämförelse",
+    "href": "vecka2.html#datastrukturer-en-snabb-jämförelse",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "Datastrukturer – en snabb jämförelse",
+    "text": "Datastrukturer – en snabb jämförelse\n\n\n\n\n\n\n\n\n\n\nTyp\nOrdnad?\nKan ändras?\nDubbletter tillåtna?\nExempel på användning\n\n\n\n\nlist\nJa\nJa\nJa\nBackloggen, en lista med spel\n\n\ntuple\nJa\nNej\nJa\nFast release-info (titel, år)\n\n\ndict\nJa (från Python 3.7+)\nJa\nNycklar unika\nEtt spel med flera egenskaper\n\n\nset\nNej\nJa\nNej\nAlla unika plattformar du äger",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#övningar",
+    "href": "vecka2.html#övningar",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Din backlogg som lista\n\n\n\nSkapa en lista backlog med minst 6 speltitlar. Skriv ut hela listan med en for-loop, numrerad med enumerate().\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Lägg till och ta bort\n\n\n\nUtgå från listan i övning 1. Lägg till ett nytt spel längst fram med insert(), ta bort ett spel med remove(), och skriv ut listan före och efter.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Release-info som tuple\n\n\n\nSkapa tre tuples med (title, release_year) för tre olika spel. Loopa igenom dem och skriv ut “TITEL kom ut YEAR”.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Ett spel som dictionary\n\n\n\nSkapa en dictionary game med minst fem nycklar (title, platform, rating, completed, hours_played). Skriv ut varje nyckel/värde-par med en for-loop.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Hela backloggen som dictionaries\n\n\n\nSkapa en lista games med minst 5 dictionaries (samma struktur som övning 4). Skriv ett program som räknar ut och skriver ut det genomsnittliga betyget för alla spel.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Mina plattformar\n\n\n\nSkapa en set platforms med alla plattformar du äger spel på (lägg gärna in någon dubblett för att se att den försvinner). Skriv ut hur många unika plattformar du har.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Filtrera backloggen\n\n\n\nUtgå från listan games i övning 5. Använd en list comprehension för att skapa en ny lista favorites med bara titlarna på spel som har rating &gt;= 8.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Sök i backloggen\n\n\n\nSkriv ett program som frågar användaren efter en speltitel med input(), och söker igenom listan games (dictionaries). Skriv ut spelets alla detaljer om det hittas, annars ett meddelande om att spelet inte finns i backloggen.\n\n\n\n\n\n\n\n\nViktigtÖvning 9 (utmaning) – Gemensamma spel\n\n\n\nSkapa två sets, my_games och friend_games, med speltitlar. Använd mängdoperatorer (&, |, -) för att skriva ut: (1) spel ni båda har, (2) alla spel tillsammans utan dubbletter, (3) spel bara du har.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka2.html#sammanfattning",
+    "href": "vecka2.html#sammanfattning",
+    "title": "Vecka 2: Datastrukturer",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu kan du organisera data i listor, tuples, dictionaries och sets – och en lista av dictionaries fungerar redan som en enkel “databas” i minnet för hela GameLog-backloggen. Nästa vecka tittar vi på funktioner och moduler, så att vi kan börja strukturera koden i återanvändbara byggblock i stället för att skriva allt i en enda lång fil.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 2: Datastrukturer"
+    ]
+  },
+  {
+    "objectID": "vecka16.html",
+    "href": "vecka16.html",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "",
+    "text": "Del 5 (databaser) har varit den tyngsta delen av kursen — SQL, ORM och att koppla ihop allt med FastAPI, allt på bara några veckor. Den här veckan har inget stort nytt koncept. I stället refaktorerar vi hela GameLog-appen end-to-end, fördjupar oss i relationer, och ger utrymme åt den som ligger efter att komma ikapp.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ngå igenom hela GameLog-projektet och identifiera vad som saknas eller kan förbättras\nanvända joinedload för att hämta relaterad data effektivt\nskriva lite mer avancerade queries: filtrering, sortering, aggregering",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#en-vecka-att-landa-i",
+    "href": "vecka16.html#en-vecka-att-landa-i",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "",
+    "text": "Del 5 (databaser) har varit den tyngsta delen av kursen — SQL, ORM och att koppla ihop allt med FastAPI, allt på bara några veckor. Den här veckan har inget stort nytt koncept. I stället refaktorerar vi hela GameLog-appen end-to-end, fördjupar oss i relationer, och ger utrymme åt den som ligger efter att komma ikapp.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ngå igenom hela GameLog-projektet och identifiera vad som saknas eller kan förbättras\nanvända joinedload för att hämta relaterad data effektivt\nskriva lite mer avancerade queries: filtrering, sortering, aggregering",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#statuskontroll-hela-projektet-i-ett-svep",
+    "href": "vecka16.html#statuskontroll-hela-projektet-i-ett-svep",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "1. Statuskontroll — hela projektet i ett svep",
+    "text": "1. Statuskontroll — hela projektet i ett svep\nInnan vi går vidare, en checklista för hela GameLog-API:et hittills:\n\n\n\n\n\n\nTipsChecklista\n\n\n\n\ngames, players och playthroughs har varsin komplett CRUD-router\nAlla endpoints använder Depends(get_db), ingen kod läser längre från en lista i minnet\nAlla “in”-modeller (GameCreate) och “ut”-modeller (GameOut) är tydligt separerade\n404 returneras konsekvent när en resurs inte hittas\nProjektet är uppdelat i models.py (SQLAlchemy), schemas.py (Pydantic) och routers/\n\n\n\nOm något saknas — nu är veckan att fylla i det, innan vi bygger vidare med autentisering och testning.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#n1-problemet",
+    "href": "vecka16.html#n1-problemet",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "2. N+1-problemet",
+    "text": "2. N+1-problemet\nplaythroughs = db.query(PlaythroughModel).all()\nfor p in playthroughs:\n    print(p.game.title)   # varje rad triggar en NY databasquery!\nOm du har 100 playthroughs innebär loopen ovan 101 databasqueries — en för att hämta alla playthroughs, och sedan en extra för varje spel som hämtas via p.game. Det kallas N+1-problemet och är en av de vanligaste prestandafällorna med ORM:er.\n\nLösningen: joinedload\nfrom sqlalchemy.orm import joinedload\n\nplaythroughs = (\n    db.query(PlaythroughModel)\n    .options(joinedload(PlaythroughModel.game), joinedload(PlaythroughModel.player))\n    .all()\n)\n\nfor p in playthroughs:\n    print(p.game.title)   # ingen extra query - datan hämtades redan\njoinedload säger åt SQLAlchemy att hämta de kopplade objekten i samma databasquery (med en JOIN, precis som i vecka 13), i stället för en separat query per rad.\n\n\n\n\n\n\nTipsNär spelar detta roll?\n\n\n\nMed 3 playthroughs märker du ingen skillnad. Med 10 000 gör det stor skillnad. Bra att känna till mönstret redan nu — det är en av de vanligaste sakerna som gör riktiga API:er långsamma.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#mer-avancerad-filtrering",
+    "href": "vecka16.html#mer-avancerad-filtrering",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "3. Mer avancerad filtrering",
+    "text": "3. Mer avancerad filtrering\n# Flera villkor kombinerade\ngames = (\n    db.query(GameModel)\n    .filter(GameModel.platform == \"PC\", GameModel.rating &gt;= 8)\n    .all()\n)\n\n# Sortering\ngames = db.query(GameModel).order_by(GameModel.rating.desc()).all()\n\n# Paginering\ngames = db.query(GameModel).offset(0).limit(10).all()\n\n# Textsökning\nfrom sqlalchemy import func\ngames = db.query(GameModel).filter(GameModel.title.ilike(f\"%{search_term}%\")).all()",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#aggregering",
+    "href": "vecka16.html#aggregering",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "4. Aggregering",
+    "text": "4. Aggregering\nfrom sqlalchemy import func\n\n# Genomsnittligt betyg\naverage_rating = db.query(func.avg(GameModel.rating)).scalar()\n\n# Antal spel per plattform\ncounts_per_platform = (\n    db.query(GameModel.platform, func.count(GameModel.id))\n    .group_by(GameModel.platform)\n    .all()\n)\nDet här motsvarar AVG() och GROUP BY från SQL-veckan (vecka 13) — fast uttryckt genom ORM:et.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#övningar",
+    "href": "vecka16.html#övningar",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Gå igenom checklistan\n\n\n\nGå igenom checklistan ovan mot ditt eget GameLog-projekt. Åtgärda det som saknas innan du fortsätter.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Hitta N+1-problemet\n\n\n\nSkriv en endpoint som listar alla playthroughs med kopplat spel och spelare utan joinedload. Räkna (eller logga) hur många databasqueries som körs.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Fixa med joinedload\n\n\n\nSkriv om samma endpoint med joinedload för båda relationerna, och verifiera att antalet queries minskar.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Sök och sortera\n\n\n\nLägg till query-parametrar på GET /games/ för fritextsökning i titeln (ilike) och sortering på valfritt fält.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Paginering på riktigt\n\n\n\nLägg till skip/limit som query-parametrar på GET /games/, kopplade till .offset()/.limit().\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Statistik-endpoint med aggregering\n\n\n\nBygg om /games/stats-endpointen (från tidigare veckor) till att använda func.avg() och func.count() i stället för att räkna manuellt i Python.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Antal per plattform\n\n\n\nSkapa en endpoint GET /games/stats/by-platform som returnerar antal spel grupperat per plattform, med GROUP BY.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Refaktorera till en service-nivå\n\n\n\nFlytta all databaslogik (queries) ut från routern till egna funktioner i en ny fil, t.ex. services/games.py (t.ex. get_all_games(db), create_game(db, game)). Routern ska bara ta emot requesten, anropa service-funktionen, och returnera svaret. Det här mönstret gör koden lättare att testa — precis vad vi gör nästa vecka.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka16.html#sammanfattning",
+    "href": "vecka16.html#sammanfattning",
+    "title": "Vecka 16: Fördjupning och buffertvecka",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nDen här veckan har handlat om att befästa och förbättra, inte lära nytt: du har sett N+1-problemet och joinedload, mer avancerad filtrering och sortering, och aggregering med func. Om du gjorde utmaningen har du dessutom börjat separera databaslogik från routers — ett mönster som gör allt lättare att testa. Och testning är precis vad de två sista veckorna handlar om.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 16: Fördjupning och buffertvecka"
+    ]
+  },
+  {
+    "objectID": "vecka12.html",
+    "href": "vecka12.html",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "",
+    "text": "Den här veckan har inget nytt koncept — i stället sätter vi ihop allt från del 3 till ett komplett CRUD-API (Create, Read, Update, Delete) för spel. Det här är sista veckan innan vi ersätter minneslagringen med en riktig databas, så det är värt att bygga det här ordentligt.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nbygga alla fyra CRUD-operationer för en resurs\nreturnera korrekta statuskoder för varje situation\nhantera “hittades inte”-fall med HTTPException\nstrukturera en komplett router från grunden",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#allt-vi-lärt-oss-i-ett-enda-api",
+    "href": "vecka12.html#allt-vi-lärt-oss-i-ett-enda-api",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "",
+    "text": "Den här veckan har inget nytt koncept — i stället sätter vi ihop allt från del 3 till ett komplett CRUD-API (Create, Read, Update, Delete) för spel. Det här är sista veckan innan vi ersätter minneslagringen med en riktig databas, så det är värt att bygga det här ordentligt.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nbygga alla fyra CRUD-operationer för en resurs\nreturnera korrekta statuskoder för varje situation\nhantera “hittades inte”-fall med HTTPException\nstrukturera en komplett router från grunden",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#statuskoder-mer-i-detalj",
+    "href": "vecka12.html#statuskoder-mer-i-detalj",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "1. Statuskoder, mer i detalj",
+    "text": "1. Statuskoder, mer i detalj\n\n\n\n\n\n\n\n\nOperation\nLyckad statuskod\nVanligt fel\n\n\n\n\nGET (lista)\n200 OK\n—\n\n\nGET (en post)\n200 OK\n404 Not Found\n\n\nPOST (skapa)\n201 Created\n422 Unprocessable Entity (valideringsfel, sköts automatiskt)\n\n\nPUT (uppdatera)\n200 OK\n404 Not Found\n\n\nDELETE (ta bort)\n204 No Content\n404 Not Found",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#httpexception-rätt-sätt-att-signalera-fel",
+    "href": "vecka12.html#httpexception-rätt-sätt-att-signalera-fel",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "2. HTTPException — rätt sätt att signalera fel",
+    "text": "2. HTTPException — rätt sätt att signalera fel\nfrom fastapi import APIRouter, HTTPException\n\nrouter = APIRouter(prefix=\"/games\", tags=[\"games\"])\n\n@router.get(\"/{game_id}\")\ndef get_game(game_id: int):\n    for game in games_db:\n        if game[\"id\"] == game_id:\n            return game\n    raise HTTPException(status_code=404, detail=\"Game not found\")\nHTTPException avbryter endpointen direkt och skickar rätt statuskod och felmeddelande som JSON till klienten — mycket bättre än att bara returnera {\"error\": \"...\"} med 200 OK, vilket skulle lura klienten att tro att allt gick bra.",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#hela-crud-apiet-för-spel",
+    "href": "vecka12.html#hela-crud-apiet-för-spel",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "3. Hela CRUD-API:et för spel",
+    "text": "3. Hela CRUD-API:et för spel\n# routers/games.py\nfrom fastapi import APIRouter, HTTPException, status\nfrom models import GameCreate, GameOut, GameUpdate\n\nrouter = APIRouter(prefix=\"/games\", tags=[\"games\"])\n\ngames_db: list[dict] = []\nnext_id = 1\n\n\n@router.get(\"/\", response_model=list[GameOut])\ndef get_games():\n    return games_db\n\n\n@router.get(\"/{game_id}\", response_model=GameOut)\ndef get_game(game_id: int):\n    game = _find_game_or_404(game_id)\n    return game\n\n\n@router.post(\"/\", response_model=GameOut, status_code=status.HTTP_201_CREATED)\ndef create_game(game: GameCreate):\n    global next_id\n    new_game = {\"id\": next_id, **game.model_dump()}\n    games_db.append(new_game)\n    next_id += 1\n    return new_game\n\n\n@router.put(\"/{game_id}\", response_model=GameOut)\ndef update_game(game_id: int, updated_game: GameUpdate):\n    game = _find_game_or_404(game_id)\n    game.update(updated_game.model_dump())\n    return game\n\n\n@router.delete(\"/{game_id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_game(game_id: int):\n    game = _find_game_or_404(game_id)\n    games_db.remove(game)\n\n\ndef _find_game_or_404(game_id: int) -&gt; dict:\n    for game in games_db:\n        if game[\"id\"] == game_id:\n            return game\n    raise HTTPException(status_code=404, detail=\"Game not found\")\nNotera _find_game_or_404 — en liten hjälpfunktion som gör att vi slipper upprepa samma sökning och felhantering i tre olika endpoints.\n\n\n\n\n\n\nTipsDRY — Don’t Repeat Yourself\n\n\n\nSå fort du kopierar samma kodblock till en tredje endpoint, är det dags för en hjälpfunktion. Det är exakt samma princip som funktionerna vi skrev i vecka 3, tillämpad på router-kod.",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#gameupdate-en-tredje-pydantic-modell",
+    "href": "vecka12.html#gameupdate-en-tredje-pydantic-modell",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "4. GameUpdate — en tredje Pydantic-modell",
+    "text": "4. GameUpdate — en tredje Pydantic-modell\n# models.py\nfrom pydantic import BaseModel\nfrom typing import Optional\n\nclass GameUpdate(BaseModel):\n    title: Optional[str] = None\n    platform: Optional[str] = None\n    rating: Optional[float] = None\nAlla fält är valfria här — en PUT/PATCH-request ska kunna uppdatera bara de fält användaren faktiskt skickar in.\n\n\n\n\n\n\nVarningPUT vs PATCH\n\n\n\nStrikt REST-konvention säger att PUT ska ersätta hela resursen (alla fält krävs), medan PATCH uppdaterar delvis (alla fält valfria). I praktiken använder många API:er PUT för båda för enkelhetens skull — vilket vi gör här också. Var medveten om skillnaden om du bygger API:er i verkliga projekt.",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#övningar",
+    "href": "vecka12.html#övningar",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Komplett games-router\n\n\n\nBygg klart hela games-routern enligt exemplet ovan, med alla fyra CRUD-operationer och korrekta statuskoder.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Testa alla fel\n\n\n\nTesta i /docs: hämta ett spel som inte finns, uppdatera ett som inte finns, ta bort ett som inte finns. Kontrollera att alla ger 404.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Samma sak för players\n\n\n\nBygg en komplett CRUD-router för players, med samma mönster (PlayerCreate, PlayerOut, PlayerUpdate, _find_player_or_404).\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Validering vid uppdatering\n\n\n\nSe till att rating i GameUpdate fortfarande valideras (1–10) om den skickas med, trots att fältet är valfritt.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Förhindra dubbletter\n\n\n\nLägg till en kontroll i create_game som returnerar HTTPException(400) om ett spel med exakt samma titel redan finns i games_db.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Statistik-endpoint\n\n\n\nLägg till en GET /games/stats-endpoint som returnerar antal spel, genomsnittligt betyg och antal per plattform.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Filtrera och sortera\n\n\n\nLägg till query-parametrar på GET /games/ för att filtrera på platform och sortera resultatet efter rating (stigande eller fallande).\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – playthroughs komplett\n\n\n\nBygg en komplett CRUD-router för playthroughs, som refererar till game_id och player_id. Kontrollera i create_playthrough att både spelet och spelaren faktiskt finns innan playthrough:en skapas — annars 404.",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka12.html#sammanfattning",
+    "href": "vecka12.html#sammanfattning",
+    "title": "Vecka 12: Komplett CRUD-API i minnet",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nGameLog har nu ett komplett, robust CRUD-API för spel (och gärna spelare/playthroughs om du gjort utmaningarna) — med rätt statuskoder och tydlig felhantering. Nästa vecka börjar del 5: databaser, där vi lämnar minneslagringen bakom oss för gott och lär oss grunderna i relationsdatabaser och SQL.",
+    "crumbs": [
+      "Start",
+      "Del 4 — Bygga API:et",
+      "Vecka 12: Komplett CRUD-API i minnet"
+    ]
+  },
+  {
+    "objectID": "vecka1.html",
+    "href": "vecka1.html",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "",
+    "text": "Under den här kursen bygger vi tillsammans GameLog – en applikation där du kan hålla koll på vilka spel du äger, vilka du har spelat, och vad du tyckte om dem. Precis som Letterboxd fast för spel i stället för filmer.\nVi börjar helt utan webb-API:er och databaser. Först måste vi lära oss språket Python ordentligt. I slutet av kursen har GameLog vuxit till en riktig applikation med ett API och en databas i botten.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ninstallera Python och skapa en virtuell miljö\nskriva och köra ett enkelt Python-program\nanvända variabler och grundläggande datatyper\nstyra programflödet med if/elif/else\nupprepa kod med while- och for-loopar",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#välkommen-till-gamelog",
+    "href": "vecka1.html#välkommen-till-gamelog",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "",
+    "text": "Under den här kursen bygger vi tillsammans GameLog – en applikation där du kan hålla koll på vilka spel du äger, vilka du har spelat, och vad du tyckte om dem. Precis som Letterboxd fast för spel i stället för filmer.\nVi börjar helt utan webb-API:er och databaser. Först måste vi lära oss språket Python ordentligt. I slutet av kursen har GameLog vuxit till en riktig applikation med ett API och en databas i botten.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ninstallera Python och skapa en virtuell miljö\nskriva och köra ett enkelt Python-program\nanvända variabler och grundläggande datatyper\nstyra programflödet med if/elif/else\nupprepa kod med while- och for-loopar",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#installation-och-uppsättning",
+    "href": "vecka1.html#installation-och-uppsättning",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "1. Installation och uppsättning",
+    "text": "1. Installation och uppsättning\n\nInstallera Python\nKontrollera först om Python redan är installerat:\npython3 --version\nOm du inte har Python, ladda ner det från python.org. Vi använder Python 3.11 eller senare i den här kursen.\n\n\nVirtuell miljö (venv)\nEn virtuell miljö gör att varje projekt får sina egna paket, utan att krocka med andra projekt på datorn.\npython3 -m venv .venv\nAktivera den:\n# macOS/Linux\nsource .venv/bin/activate\n\n# Windows\n.venv\\Scripts\\activate\n\n\n\n\n\n\nTipsVarför bry sig om venv redan nu?\n\n\n\nLängre fram i kursen kommer vi installera paket som FastAPI och SQLAlchemy. Om vi vänjer oss vid venv från start slipper vi problem senare.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#ditt-första-program",
+    "href": "vecka1.html#ditt-första-program",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "2. Ditt första program",
+    "text": "2. Ditt första program\nSkapa en fil som heter main.py och skriv:\nprint(\"Welcome to GameLog!\")\nKör den i terminalen:\npython3 main.py\nprint() är en funktion – ett kommando som gör något åt dig. Vi kommer använda den mycket för att se vad vår kod gör.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#variabler-och-datatyper",
+    "href": "vecka1.html#variabler-och-datatyper",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "3. Variabler och datatyper",
+    "text": "3. Variabler och datatyper\nEn variabel är en namngiven plats i minnet där vi sparar ett värde.\ngame_title = \"The Legend of Zelda\"\nrelease_year = 2023\nrating = 4.5\nowns_game = True\n\n\n\n\n\n\nTipsNamnkonvention\n\n\n\nVi skriver all kod på engelska genom hela kursen – variabelnamn, funktionsnamn och kommentarer. Det är standarden i den riktiga programmeringsvärlden, och det gör det lättare att läsa dokumentation och andras kod senare.\n\n\nPython har några grundläggande datatyper vi kommer använda hela kursen:\n\n\n\nTyp\nExempel\nBeskrivning\n\n\n\n\nstr\n\"Zelda\"\ntext (sträng)\n\n\nint\n2023\nheltal\n\n\nfloat\n4.5\ndecimaltal\n\n\nbool\nTrue/False\nsant eller falskt\n\n\n\nprint(type(game_title))   # &lt;class 'str'&gt;\nprint(type(rating))       # &lt;class 'float'&gt;\n\nInput från användaren\ntitle = input(\"Which game are you playing right now? \")\nprint(\"You are currently playing:\", title)\n\n\n\n\n\n\nVarningKom ihåg\n\n\n\ninput() returnerar alltid en sträng, även om användaren skriver en siffra. Vill du räkna med värdet måste du konvertera det med int() eller float().",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#villkor-if-elif-else",
+    "href": "vecka1.html#villkor-if-elif-else",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "4. Villkor: if / elif / else",
+    "text": "4. Villkor: if / elif / else\nMed villkor kan programmet ta olika vägar beroende på situationen.\nrating = 8\n\nif rating &gt;= 9:\n    print(\"Masterpiece!\")\nelif rating &gt;= 7:\n    print(\"Really good game.\")\nelif rating &gt;= 5:\n    print(\"It's alright.\")\nelse:\n    print(\"Not for me.\")\nJämförelseoperatorer att känna till: ==, !=, &lt;, &gt;, &lt;=, &gt;=. Logiska operatorer: and, or, not.\nplatform = \"PC\"\nhas_completed_game = True\n\nif platform == \"PC\" and has_completed_game:\n    print(\"Nice work finishing it on PC!\")",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#loopar-while-och-for",
+    "href": "vecka1.html#loopar-while-och-for",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "5. Loopar: while och for",
+    "text": "5. Loopar: while och for\n\nwhile-loop\nUpprepar kod så länge ett villkor är sant.\ngames_left = 3\n\nwhile games_left &gt; 0:\n    print(\"You have\", games_left, \"games left in the backlog.\")\n    games_left -= 1\n\nprint(\"Backlog is empty!\")\n\n\nfor-loop\nUpprepar kod för varje element i en samling.\nbacklog = [\"Hades\", \"Celeste\", \"Hollow Knight\"]\n\nfor game in backlog:\n    print(\"Next game to play:\", game)\nrange() används ofta tillsammans med for när du vill upprepa något ett visst antal gånger:\nfor i in range(5):\n    print(\"Play day\", i + 1)",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#övningar",
+    "href": "vecka1.html#övningar",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Din spelprofil\n\n\n\nSkapa variabler för ditt favoritspel: game_title, release_year, rating (1–10) och has_completed (True/False). Skriv ut en snygg presentation av spelet med print().\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Betygsättare\n\n\n\nSkriv ett program som frågar användaren efter ett betyg (1–10) med input() och skriver ut ett omdöme baserat på betyget, med if/elif/else.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Backloggen\n\n\n\nSkapa en lista med minst 5 speltitlar (backlog). Använd en for-loop för att skriva ut varje spel med ett nummer framför, t.ex. 1. Hades.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Plattformskoll\n\n\n\nSkapa variabeln platform med värdet \"PC\", \"PlayStation\", \"Xbox\" eller \"Switch\". Skriv ett if/elif/else som skriver ut ett anpassat meddelande för varje plattform.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Prisvarning\n\n\n\nSkriv en variabel price (ett heltal). Använd villkor för att skriva ut \"Billigt fynd!\" om priset är under 100, \"Rimligt pris\" om det är 100–400, och \"Vänta på rea\" om det är över 400.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Räkna ner till release\n\n\n\nAnvänd en while-loop som räknar ner days_until_release från valfritt starttal till 0, och skriver ut antalet dagar kvar för varje varv. Skriv “Release day!” när loopen är klar.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 (utmaning) – Genomsnittsbetyg\n\n\n\nSkapa en lista ratings med minst 5 betyg (int eller float). Använd en for-loop för att summera alla betyg, och räkna sedan ut och skriv ut genomsnittet.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Logga speltimmar\n\n\n\nAnvänd en while-loop som frågar användaren “Do you want to log more play hours? (yes/no)” och summerar speltimmar tills användaren svarar nej. Skriv ut totalen på slutet.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "vecka1.html#sammanfattning",
+    "href": "vecka1.html#sammanfattning",
+    "title": "Vecka 1: Kom igång med Python",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nDen här veckan har vi lagt grunden: installation, variabler, villkor och loopar. Nästa vecka bygger vi vidare med listor, dictionaries och tuples – verktygen vi behöver för att faktiskt lagra hela GameLog-backloggen i minnet, innan vi senare flyttar över till en riktig databas.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 1: Kom igång med Python"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "GameLog",
+    "section": "",
+    "text": "NoteraOm kursen\n\n\n\nDen här kursen lär dig Python från grunden genom att bygga GameLog — en applikation där du kan hålla koll på vilka spel du äger, vilka du har spelat, och vad du tyckte om dem. Vi börjar med de mest grundläggande byggstenarna i Python och bygger stegvis vidare, tills GameLog blivit ett riktigt API kopplat till en databas.\n18 veckor, en 2,5-timmarslektion per vecka.",
+    "crumbs": [
+      "Start",
+      "Kursöversikt"
+    ]
+  },
+  {
+    "objectID": "index.html#vad-du-kommer-kunna-när-kursen-är-klar",
+    "href": "index.html#vad-du-kommer-kunna-när-kursen-är-klar",
+    "title": "GameLog",
+    "section": "Vad du kommer kunna när kursen är klar",
+    "text": "Vad du kommer kunna när kursen är klar\nVid kursens slut har du byggt ett fullständigt REST-API i FastAPI, med en riktig databas i botten via SQLAlchemy, strukturerat med objektorienterad programmering. Du kommer ha grundläggande kunskaper i:\n\nPython-syntax, datastrukturer och kontrollflöde\nobjektorienterad programmering (klasser, arv, komposition)\nhur webbens API:er fungerar och hur man bygger sina egna med FastAPI\nhur relationsdatabaser fungerar och hur man kopplar dem till ett API\ngrundläggande autentisering och testning",
+    "crumbs": [
+      "Start",
+      "Kursöversikt"
+    ]
+  },
+  {
+    "objectID": "index.html#kursens-sex-delar",
+    "href": "index.html#kursens-sex-delar",
+    "title": "GameLog",
+    "section": "Kursens sex delar",
+    "text": "Kursens sex delar\n\n\n\n\n\n\n\n\nDel\nVeckor\nInnehåll\n\n\n\n\n1. Python-grunderna\n1–4\nInstallation, variabler, kontrollflöde, datastrukturer, funktioner, felhantering\n\n\n2. Objektorienterad programmering\n5–8\nKlasser, objekt, inkapsling, arv, dataclasses\n\n\n3. API:er och FastAPI\n9–11\nHTTP-grunder, FastAPI, Pydantic, routers\n\n\n4. Bygga API:et\n12\nCRUD i minnet, utan databas\n\n\n5. Databaser\n13–16\nSQL, SQLAlchemy, koppla FastAPI till en riktig databas\n\n\n6. Sista biten & projekt\n17–18\nAutentisering, testning, avslutande projekt",
+    "crumbs": [
+      "Start",
+      "Kursöversikt"
+    ]
+  },
+  {
+    "objectID": "index.html#lektioner",
+    "href": "index.html#lektioner",
+    "title": "GameLog",
+    "section": "Lektioner",
+    "text": "Lektioner\n\n\n\n\n\n\nTipsDel 1 — Python-grunderna\n\n\n\n\nVecka 1: Kom igång med Python\nVecka 2: Datastrukturer\nVecka 3: Funktioner och moduler\nVecka 4: Felhantering och filer\n\n\n\n\n\n\n\n\n\nTipsDel 2 — Objektorienterad programmering\n\n\n\n\nVecka 5: Klasser och objekt\nVecka 6: Inkapsling och komposition\nVecka 7: Arv och polymorfism\nVecka 8: Dataclasses och moderna idiom\n\n\n\n\n\n\n\n\n\nTipsDel 3 — API:er och FastAPI\n\n\n\n\nVecka 9: HTTP-grunder och första FastAPI-appen\nVecka 10: Pydantic-modeller\nVecka 11: Projektstruktur och routers\n\n\n\n\n\n\n\n\n\nTipsDel 4 — Bygga API:et\n\n\n\n\nVecka 12: CRUD-API i minnet\n\n\n\n\n\n\n\n\n\nTipsDel 5 — Databaser\n\n\n\n\nVecka 13: Relationsdatabaser och SQL\nVecka 14: SQLAlchemy ORM\nVecka 15: Koppla FastAPI till databasen\nVecka 16: Fördjupning och buffertvecka\n\n\n\n\n\n\n\n\n\nTipsDel 6 — Sista biten och projekt\n\n\n\n\nVecka 17: Autentisering och validering\nVecka 18: Testning och avslutande projekt",
+    "crumbs": [
+      "Start",
+      "Kursöversikt"
+    ]
+  },
+  {
+    "objectID": "index.html#så-jobbar-vi",
+    "href": "index.html#så-jobbar-vi",
+    "title": "GameLog",
+    "section": "Så jobbar vi",
+    "text": "Så jobbar vi\n\n\n\n\n\n\nVarningInnan du börjar\n\n\n\nDu behöver Python 3.11 eller senare installerat. Allt du behöver för uppsättningen finns i Vecka 1.\n\n\nInstruktionerna genom hela kursen är skrivna på svenska, men all kod — variabelnamn, funktionsnamn och kommentarer — skrivs på engelska, precis som i den riktiga programmeringsvärlden. Varje vecka avslutas med flera övningar, ofta med en eller två extra utmaningar för dig som vill ha mer att bita i.",
+    "crumbs": [
+      "Start",
+      "Kursöversikt"
+    ]
+  },
+  {
+    "objectID": "vecka11.html",
+    "href": "vecka11.html",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "",
+    "text": "Hittills har all vår FastAPI-kod legat i en enda main.py. Det fungerar för ett par endpoints, men GameLog kommer snart ha endpoints för spel, spelare och playthroughs. Den här veckan strukturerar vi om projektet i flera filer, precis som vi gjorde med moduler i vecka 3 — fast med FastAPI:s egna verktyg för det: routers och dependency injection.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndela upp en FastAPI-app i flera filer med APIRouter\norganisera ett projekt i en tydlig mappstruktur\nförstå grunderna i Depends() för delad logik mellan endpoints",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#från-en-fil-till-ett-riktigt-projekt",
+    "href": "vecka11.html#från-en-fil-till-ett-riktigt-projekt",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "",
+    "text": "Hittills har all vår FastAPI-kod legat i en enda main.py. Det fungerar för ett par endpoints, men GameLog kommer snart ha endpoints för spel, spelare och playthroughs. Den här veckan strukturerar vi om projektet i flera filer, precis som vi gjorde med moduler i vecka 3 — fast med FastAPI:s egna verktyg för det: routers och dependency injection.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndela upp en FastAPI-app i flera filer med APIRouter\norganisera ett projekt i en tydlig mappstruktur\nförstå grunderna i Depends() för delad logik mellan endpoints",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#en-rimlig-mappstruktur",
+    "href": "vecka11.html#en-rimlig-mappstruktur",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "1. En rimlig mappstruktur",
+    "text": "1. En rimlig mappstruktur\ngamelog/\n├── main.py\n├── models.py          # Pydantic-modeller\n├── routers/\n│   ├── __init__.py\n│   ├── games.py\n│   └── players.py\n└── data.py             # tillfällig \"databas\" i minnet\nVi kommer bygga vidare på den här strukturen resten av kursen — när vi lägger till en riktig databas senare byts bara data.py ut, resten av strukturen står kvar.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#models.py-alla-pydantic-modeller-på-ett-ställe",
+    "href": "vecka11.html#models.py-alla-pydantic-modeller-på-ett-ställe",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "2. models.py — alla Pydantic-modeller på ett ställe",
+    "text": "2. models.py — alla Pydantic-modeller på ett ställe\n# models.py\nfrom pydantic import BaseModel\nfrom typing import Optional\n\nclass GameCreate(BaseModel):\n    title: str\n    platform: str\n    rating: float\n\nclass GameOut(BaseModel):\n    id: int\n    title: str\n    platform: str\n    rating: float\n\nclass PlayerCreate(BaseModel):\n    name: str\n\nclass PlayerOut(BaseModel):\n    id: int\n    name: str",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#apirouter-endpoints-i-en-egen-fil",
+    "href": "vecka11.html#apirouter-endpoints-i-en-egen-fil",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "3. APIRouter — endpoints i en egen fil",
+    "text": "3. APIRouter — endpoints i en egen fil\n# routers/games.py\nfrom fastapi import APIRouter\nfrom models import GameCreate, GameOut\n\nrouter = APIRouter(prefix=\"/games\", tags=[\"games\"])\n\ngames_db = []\nnext_id = 1\n\n@router.get(\"/\", response_model=list[GameOut])\ndef get_games():\n    return games_db\n\n@router.get(\"/{game_id}\", response_model=GameOut)\ndef get_game(game_id: int):\n    for game in games_db:\n        if game[\"id\"] == game_id:\n            return game\n    return {\"error\": \"Game not found\"}\n\n@router.post(\"/\", response_model=GameOut)\ndef create_game(game: GameCreate):\n    global next_id\n    new_game = {\"id\": next_id, **game.model_dump()}\n    games_db.append(new_game)\n    next_id += 1\n    return new_game\nNotera prefix=\"/games\" — det betyder att @router.get(\"/\") faktiskt blir /games/, och @router.get(\"/{game_id}\") blir /games/{game_id}. Vi slipper upprepa /games i varje route.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#koppla-ihop-allt-i-main.py",
+    "href": "vecka11.html#koppla-ihop-allt-i-main.py",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "4. Koppla ihop allt i main.py",
+    "text": "4. Koppla ihop allt i main.py\n# main.py\nfrom fastapi import FastAPI\nfrom routers import games, players\n\napp = FastAPI(title=\"GameLog API\")\n\napp.include_router(games.router)\napp.include_router(players.router)\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Welcome to the GameLog API\"}\nmain.py blir nu mycket kortare — dess enda jobb är att sätta ihop appen och registrera routers. Varje domän (games, players) har sin egen fil med sin egen logik.\n\n\n\n\n\n\nTipstags=[“games”]\n\n\n\ntags grupperar endpoints i /docs-sidan, så att alla /games-endpoints hamnar under en egen rubrik, skilt från /players. Rent kosmetiskt, men gör dokumentationen mycket lättare att navigera när API:et växer.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#depends-grunderna",
+    "href": "vecka11.html#depends-grunderna",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "5. Depends() — grunderna",
+    "text": "5. Depends() — grunderna\nDepends() låter en endpoint be FastAPI om något den behöver, utan att själv veta hur det skapas. Ett enkelt exempel — en delad funktion för paginering:\nfrom fastapi import Depends\n\ndef pagination_params(skip: int = 0, limit: int = 10):\n    return {\"skip\": skip, \"limit\": limit}\n\n@router.get(\"/\")\ndef get_games(pagination: dict = Depends(pagination_params)):\n    skip = pagination[\"skip\"]\n    limit = pagination[\"limit\"]\n    return games_db[skip : skip + limit]\nFastAPI anropar pagination_params automatiskt, läser skip/limit från query-parametrarna, och skickar in resultatet i get_games. Samma pagination_params-funktion kan återanvändas i players.py också — ingen kod behöver upprepas.\n\n\n\n\n\n\nTipsVarför är detta viktigt nu?\n\n\n\nDepends() känns kanske overkill för paginering, men det är exakt samma mekanism vi använder för att ge varje endpoint tillgång till en databas-session när vi når databasdelen av kursen (vecka 15). Bra att ha sett mönstret redan nu.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#övningar",
+    "href": "vecka11.html#övningar",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Bygg om till mappstruktur\n\n\n\nTa din FastAPI-app från vecka 9–10 och dela upp den enligt strukturen ovan: main.py, models.py, routers/games.py.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – players-router\n\n\n\nSkapa routers/players.py med en egen APIRouter (prefix=\"/players\"), och flytta över dina player-endpoints dit.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Registrera routers\n\n\n\nUppdatera main.py så den inkluderar båda routrarna med include_router(). Kontrollera i /docs att både /games och /players visas, grupperade under varsin tagg.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Fler endpoints per router\n\n\n\nLägg till en PUT /games/{game_id}- och en DELETE /games/{game_id}-endpoint i games.py.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Delad pagineringsfunktion\n\n\n\nSkapa en pagination_params-funktion i en egen fil, t.ex. dependencies.py, och använd den med Depends() i både games.py och players.py.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Sökväg-konflikter\n\n\n\nLägg till en /games/search-endpoint. Testa vad som händer om du råkar placera den efter /games/{game_id} i filen — och flytta den till rätt ordning om det behövs.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 (utmaning) – playthroughs-router\n\n\n\nSkapa en tredje router, routers/playthroughs.py, med grundläggande CRUD-endpoints för playthroughs (i minnet, ingen databas än).\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Egen dependency för validering\n\n\n\nSkriv en dependency-funktion valid_platform(platform: str) som raise:ar ett HTTPException(400) om plattformen inte finns i en tillåten lista (\"PC\", \"PlayStation\", \"Xbox\", \"Switch\"). Använd den med Depends() i en endpoint som filtrerar på plattform.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka11.html#sammanfattning",
+    "href": "vecka11.html#sammanfattning",
+    "title": "Vecka 11: Projektstruktur och routers",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nGameLog är nu organiserat som ett riktigt, skalbart projekt: routers per domän, delade Pydantic-modeller, och grunderna i Depends(). Den strukturen håller resten av kursen. Nästa vecka avslutar vi del 4 (bygga API:et) med en komplett CRUD-API i minnet — innan vi i del 5 ersätter minneslagringen med en riktig databas.",
+    "crumbs": [
+      "Start",
+      "Del 3 — API:er och FastAPI",
+      "Vecka 11: Projektstruktur och routers"
+    ]
+  },
+  {
+    "objectID": "vecka13.html",
+    "href": "vecka13.html",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "",
+    "text": "Hittills har GameLogs data legat i en Python-lista — försvinner varje gång servern startas om. Den här veckan lämnar vi minneslagring bakom och lär oss grunderna i relationsdatabaser och SQL, innan vi kopplar ihop allt med FastAPI nästa vecka.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nförklara tabeller, rader, kolumner, primärnycklar och främmande nycklar\nskriva grundläggande SQL: CREATE TABLE, INSERT, SELECT, UPDATE, DELETE\nförstå hur JOIN kopplar ihop data från flera tabeller\nköra SQL mot en SQLite-databas från Python",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#data-som-överlever-på-riktigt",
+    "href": "vecka13.html#data-som-överlever-på-riktigt",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "",
+    "text": "Hittills har GameLogs data legat i en Python-lista — försvinner varje gång servern startas om. Den här veckan lämnar vi minneslagring bakom och lär oss grunderna i relationsdatabaser och SQL, innan vi kopplar ihop allt med FastAPI nästa vecka.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nförklara tabeller, rader, kolumner, primärnycklar och främmande nycklar\nskriva grundläggande SQL: CREATE TABLE, INSERT, SELECT, UPDATE, DELETE\nförstå hur JOIN kopplar ihop data från flera tabeller\nköra SQL mot en SQLite-databas från Python",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#tabeller-rader-och-kolumner",
+    "href": "vecka13.html#tabeller-rader-och-kolumner",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "1. Tabeller, rader och kolumner",
+    "text": "1. Tabeller, rader och kolumner\nEn relationsdatabas lagrar data i tabeller — precis som ett kalkylblad. Varje rad är en post (t.ex. ett spel), varje kolumn är ett attribut (titel, plattform, betyg).\n\n\n\nid\ntitle\nplatform\nrating\n\n\n\n\n1\nHades\nPC\n9\n\n\n2\nCeleste\nSwitch\n10",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#primärnycklar-och-främmande-nycklar",
+    "href": "vecka13.html#primärnycklar-och-främmande-nycklar",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "2. Primärnycklar och främmande nycklar",
+    "text": "2. Primärnycklar och främmande nycklar\n\nEn primärnyckel (PRIMARY KEY) identifierar varje rad unikt — nästan alltid id.\nEn främmande nyckel (FOREIGN KEY) kopplar en rad i en tabell till en rad i en annan. En playthroughs-tabell behöver veta vilket spel och vilken spelare den hör till.\n\ngames              players            playthroughs\n---------          ---------          -----------------\nid (PK)            id (PK)            id (PK)\ntitle              name               game_id (FK -&gt; games.id)\nplatform                              player_id (FK -&gt; players.id)\nrating                                hours_played\nDet här är exakt samma relation vi byggde med komposition i vecka 6 (Playthrough innehåller ett Game och en Player) — nu uttryckt som databastabeller.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#create-table",
+    "href": "vecka13.html#create-table",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "3. CREATE TABLE",
+    "text": "3. CREATE TABLE\nCREATE TABLE games (\n    id INTEGER PRIMARY KEY,\n    title TEXT NOT NULL,\n    platform TEXT NOT NULL,\n    rating REAL\n);\n\nCREATE TABLE players (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL\n);\n\nCREATE TABLE playthroughs (\n    id INTEGER PRIMARY KEY,\n    game_id INTEGER NOT NULL,\n    player_id INTEGER NOT NULL,\n    hours_played REAL DEFAULT 0,\n    completed INTEGER DEFAULT 0,\n    FOREIGN KEY (game_id) REFERENCES games(id),\n    FOREIGN KEY (player_id) REFERENCES players(id)\n);",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#insert-select-update-delete",
+    "href": "vecka13.html#insert-select-update-delete",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "4. INSERT, SELECT, UPDATE, DELETE",
+    "text": "4. INSERT, SELECT, UPDATE, DELETE\n-- Lägg till data\nINSERT INTO games (title, platform, rating) VALUES ('Hades', 'PC', 9);\nINSERT INTO games (title, platform, rating) VALUES ('Celeste', 'Switch', 10);\n\n-- Hämta data\nSELECT * FROM games;\nSELECT title, rating FROM games WHERE rating &gt;= 9;\nSELECT * FROM games ORDER BY rating DESC;\n\n-- Uppdatera data\nUPDATE games SET rating = 10 WHERE title = 'Hades';\n\n-- Ta bort data\nDELETE FROM games WHERE id = 2;\n\n\n\n\n\n\nVarningGlöm aldrig WHERE\n\n\n\nUPDATE games SET rating = 0; utan WHERE uppdaterar alla rader i tabellen. Samma sak gäller DELETE FROM games; — den tömmer hela tabellen. Dubbelkolla alltid WHERE-satsen innan du kör UPDATE/DELETE mot riktig data.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#join-koppla-ihop-tabeller",
+    "href": "vecka13.html#join-koppla-ihop-tabeller",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "5. JOIN — koppla ihop tabeller",
+    "text": "5. JOIN — koppla ihop tabeller\nSELECT playthroughs.hours_played, games.title, players.name\nFROM playthroughs\nJOIN games ON playthroughs.game_id = games.id\nJOIN players ON playthroughs.player_id = players.id;\nJOIN slår ihop rader från flera tabeller baserat på en gemensam koppling (här: game_id/player_id mot respektive id). Resultatet blir en tabell med information från alla tre tabellerna kombinerat.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#sqlite-från-python",
+    "href": "vecka13.html#sqlite-från-python",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "6. SQLite från Python",
+    "text": "6. SQLite från Python\nPython har inbyggt stöd för SQLite via sqlite3 — perfekt för att öva innan vi använder ett ORM nästa vecka.\nimport sqlite3\n\nconnection = sqlite3.connect(\"gamelog.db\")\ncursor = connection.cursor()\n\ncursor.execute(\"\"\"\n    CREATE TABLE IF NOT EXISTS games (\n        id INTEGER PRIMARY KEY,\n        title TEXT NOT NULL,\n        platform TEXT NOT NULL,\n        rating REAL\n    )\n\"\"\")\n\ncursor.execute(\n    \"INSERT INTO games (title, platform, rating) VALUES (?, ?, ?)\",\n    (\"Hades\", \"PC\", 9),\n)\nconnection.commit()\n\ncursor.execute(\"SELECT * FROM games\")\nfor row in cursor.fetchall():\n    print(row)\n\nconnection.close()\n\n\n\n\n\n\nVarningParametriserade queries\n\n\n\nLägg märke till ?-tecknen i INSERT-satsen, med värdena skickade separat i en tuple. Skriv aldrig f\"INSERT INTO games VALUES ({title})\" med värden direkt i strängen — det öppnar för SQL-injection, en av de vanligaste säkerhetsbristerna i webbappar. Parametriserade queries som ovan skyddar automatiskt mot det.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#övningar",
+    "href": "vecka13.html#övningar",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Skapa tabellerna\n\n\n\nSkriv CREATE TABLE-satser för games, players och playthroughs enligt strukturen ovan, med rätt primär- och främmande nycklar.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Fyll på med data\n\n\n\nSkriv INSERT-satser för minst 5 spel, 2 spelare, och 4 playthroughs som kopplar ihop dem.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Enkla SELECT\n\n\n\nSkriv queries för: alla spel med betyg över 8, alla spel sorterade efter titel, det spel med högst betyg.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – UPDATE och DELETE\n\n\n\nSkriv en UPDATE som ändrar betyget på ett specifikt spel, och en DELETE som tar bort en specifik playthrough. Var noga med WHERE.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Din första JOIN\n\n\n\nSkriv en query som listar varje playthrough med spelets titel och spelarens namn, med JOIN.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – SQLite från Python\n\n\n\nSkriv ett Python-program som skapar games-tabellen i en SQLite-fil, lägger till tre spel, och skriver ut alla rader.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Sökning med parametrar\n\n\n\nSkriv en Python-funktion find_games_by_platform(platform) som kör en parametriserad SELECT ... WHERE platform = ?-query och returnerar resultaten.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Statistik med SQL\n\n\n\nSkriv en query som räknar ut genomsnittligt betyg per plattform, med GROUP BY platform och AVG(rating).",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka13.html#sammanfattning",
+    "href": "vecka13.html#sammanfattning",
+    "title": "Vecka 13: Relationsdatabaser och SQL",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu förstår du grunderna i hur relationsdatabaser lagrar och kopplar ihop data, och kan skriva SQL för att skapa, läsa, uppdatera och ta bort data — inklusive JOIN mellan flera tabeller. Nästa vecka höjer vi abstraktionsnivån med SQLAlchemy, ett ORM som låter oss jobba med databasen genom Python-klasser i stället för att skriva rå SQL för hand överallt.",
+    "crumbs": [
+      "Start",
+      "Del 5 — Databaser",
+      "Vecka 13: Relationsdatabaser och SQL"
+    ]
+  },
+  {
+    "objectID": "vecka18.html",
+    "href": "vecka18.html",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "",
+    "text": "Sjutton veckor sedan skrev du ditt första print(). Nu har GameLog ett komplett API, en riktig databas, och grundläggande säkerhet. Den här sista veckan lär vi oss testa koden automatiskt — och sedan är resten av veckan ditt eget avslutande projekt.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nskriva och köra tester med pytest\ntesta FastAPI-endpoints med TestClient\nbygga vidare på ett befintligt API med en egen funktion",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#sista-veckan",
+    "href": "vecka18.html#sista-veckan",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "",
+    "text": "Sjutton veckor sedan skrev du ditt första print(). Nu har GameLog ett komplett API, en riktig databas, och grundläggande säkerhet. Den här sista veckan lär vi oss testa koden automatiskt — och sedan är resten av veckan ditt eget avslutande projekt.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nskriva och köra tester med pytest\ntesta FastAPI-endpoints med TestClient\nbygga vidare på ett befintligt API med en egen funktion",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#varför-testa-automatiskt",
+    "href": "vecka18.html#varför-testa-automatiskt",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "1. Varför testa automatiskt?",
+    "text": "1. Varför testa automatiskt?\nHittills har vi testat manuellt via /docs. Det fungerar, men blir opraktiskt när API:et växer — varje gång du ändrar något måste du testa om allt för hand. Automatiska tester kör om samma kontroller på sekunder, varje gång du sparar en ändring.",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#installation",
+    "href": "vecka18.html#installation",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "2. Installation",
+    "text": "2. Installation\npip install pytest httpx",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#din-första-test",
+    "href": "vecka18.html#din-första-test",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "3. Din första test",
+    "text": "3. Din första test\n# test_basic.py\ndef add(a, b):\n    return a + b\n\ndef test_add():\n    assert add(2, 3) == 5\n    assert add(-1, 1) == 0\nKör med:\npytest\npytest hittar automatiskt alla filer som börjar med test_, och alla funktioner som börjar med test_ inuti dem. assert kontrollerar att ett villkor är sant — är det falskt, misslyckas testet och pytest visar vad som förväntades jämfört med vad som faktiskt hände.",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#testa-en-fastapi-app",
+    "href": "vecka18.html#testa-en-fastapi-app",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "4. Testa en FastAPI-app",
+    "text": "4. Testa en FastAPI-app\nFastAPI har inbyggt stöd för att testa endpoints utan att starta en riktig server.\n# test_games.py\nfrom fastapi.testclient import TestClient\nfrom main import app\n\nclient = TestClient(app)\n\ndef test_read_root():\n    response = client.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"message\": \"Welcome to the GameLog API\"}\n\n\ndef test_create_game():\n    response = client.post(\"/games/\", json={\n        \"title\": \"Hades\",\n        \"platform\": \"PC\",\n        \"rating\": 9,\n    })\n    assert response.status_code == 201\n    data = response.json()\n    assert data[\"title\"] == \"Hades\"\n    assert \"id\" in data\n\n\ndef test_get_nonexistent_game():\n    response = client.get(\"/games/999999\")\n    assert response.status_code == 404\nTestClient simulerar riktiga HTTP-requests mot din app, i minnet — snabbt, och utan att en server faktiskt behöver köras.\n\n\n\n\n\n\nVarningTesta mot en egen testdatabas\n\n\n\nI exemplet ovan skriver testerna till samma gamelog.db som du använder när du utvecklar. I ett riktigt projekt låter man tester köra mot en separat testdatabas (ofta en tillfällig SQLite-fil i minnet, sqlite:///:memory:), så att testerna aldrig påverkar din riktiga data. Fundera på hur du skulle lösa det i ditt eget projekt.",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#testa-fler-scenarier",
+    "href": "vecka18.html#testa-fler-scenarier",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "5. Testa fler scenarier",
+    "text": "5. Testa fler scenarier\ndef test_update_game():\n    create_response = client.post(\"/games/\", json={\n        \"title\": \"Celeste\", \"platform\": \"Switch\", \"rating\": 8,\n    })\n    game_id = create_response.json()[\"id\"]\n\n    update_response = client.put(f\"/games/{game_id}\", json={\"rating\": 10})\n    assert update_response.status_code == 200\n    assert update_response.json()[\"rating\"] == 10\n\n\ndef test_delete_game():\n    create_response = client.post(\"/games/\", json={\n        \"title\": \"Temp Game\", \"platform\": \"PC\", \"rating\": 5,\n    })\n    game_id = create_response.json()[\"id\"]\n\n    delete_response = client.delete(f\"/games/{game_id}\")\n    assert delete_response.status_code == 204\n\n    get_response = client.get(f\"/games/{game_id}\")\n    assert get_response.status_code == 404\n\n\n\n\n\n\nTipsTesta både lyckade och misslyckade fall\n\n\n\nEtt bra test-set täcker inte bara “allt gick bra” (happy path), utan också felfall: ogiltig data, saknade resurser, obehöriga requests. test_get_nonexistent_game ovan är ett exempel — minst lika viktigt som testerna för att skapa data.",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#avslutande-projekt",
+    "href": "vecka18.html#avslutande-projekt",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "Avslutande projekt",
+    "text": "Avslutande projekt\n\n\n\n\n\n\nViktigtProjektuppgift\n\n\n\nBygg vidare på ditt GameLog-API med minst en egen funktion enligt något av alternativen nedan (eller en egen idé, stäm av med din lärare):\nAlternativ A — Recensioner Lägg till en reviews-resurs (fritextrecension + betyg, kopplad till en spelare och ett spel) med komplett CRUD, kopplad till databasen.\nAlternativ B — Favoritlistor Låt varje spelare skapa namngivna listor (t.ex. “Att spela 2026”) med flera spel kopplade, med en egen tabell och relationer.\nAlternativ C — Statistik-dashboard Bygg ut /stats-endpoints rejält: mest spelade spel, genomsnittlig tid till genomspelning per plattform, spelare med flest loggade timmar — med aggregerande SQL-queries.\nKrav, oavsett alternativ:\n\nminst en ny databastabell med relation till en befintlig\nfullständig validering med Pydantic\nkorrekta statuskoder och felhantering\nminst 5 automatiska tester som täcker både lyckade och misslyckade fall\n\n\n\n\n\n\n\n\n\nViktigtExtra utmaning — dokumentation\n\n\n\nSkriv en kort README.md för ditt GameLog-projekt: hur man installerar och startar det, vilka endpoints som finns, och vad din egna tillagda funktion gör.",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka18.html#sammanfattning",
+    "href": "vecka18.html#sammanfattning",
+    "title": "Vecka 18: Testning och avslutande projekt",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nDu har nu byggt en komplett applikation från grunden: Python-syntax, objektorienterad programmering, ett REST-API med FastAPI, en riktig databas med SQLAlchemy, grundläggande säkerhet, och automatiska tester. Grattis — det här är precis den väg en riktig backend-utvecklare går genom, bara komprimerad till 18 veckor. Lycka till med det avslutande projektet!",
+    "crumbs": [
+      "Start",
+      "Del 6 — Sista biten och projekt",
+      "Vecka 18: Testning och avslutande projekt"
+    ]
+  },
+  {
+    "objectID": "vecka3.html",
+    "href": "vecka3.html",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "",
+    "text": "Hittills har all vår kod legat i en enda fil, och vi har upprepat liknande kod flera gånger (t.ex. för att räkna ut ett genomsnittsbetyg). Den här veckan lär vi oss funktioner – namngivna, återanvändbara kodblock – och hur vi delar upp koden i flera filer/moduler. Det är steget som gör GameLog till ett riktigt program i stället för ett skript.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndefiniera och anropa egna funktioner\nanvända parametrar, default-värden och return\nförstå skillnaden mellan lokal och global scope\ndela upp kod i flera filer och importera mellan dem",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#från-en-lång-fil-till-återanvändbara-byggblock",
+    "href": "vecka3.html#från-en-lång-fil-till-återanvändbara-byggblock",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "",
+    "text": "Hittills har all vår kod legat i en enda fil, och vi har upprepat liknande kod flera gånger (t.ex. för att räkna ut ett genomsnittsbetyg). Den här veckan lär vi oss funktioner – namngivna, återanvändbara kodblock – och hur vi delar upp koden i flera filer/moduler. Det är steget som gör GameLog till ett riktigt program i stället för ett skript.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndefiniera och anropa egna funktioner\nanvända parametrar, default-värden och return\nförstå skillnaden mellan lokal och global scope\ndela upp kod i flera filer och importera mellan dem",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#din-första-funktion",
+    "href": "vecka3.html#din-första-funktion",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "1. Din första funktion",
+    "text": "1. Din första funktion\ndef greet_player():\n    print(\"Welcome back to GameLog!\")\n\ngreet_player()\ngreet_player()   # kan anropas hur många gånger som helst\ndef definierar funktionen. Koden inuti körs bara när funktionen anropas — inte när den definieras.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#parametrar-och-argument",
+    "href": "vecka3.html#parametrar-och-argument",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "2. Parametrar och argument",
+    "text": "2. Parametrar och argument\nFunktioner blir mycket mer användbara när de kan ta emot data.\ndef greet_player(name):\n    print(f\"Welcome back, {name}!\")\n\ngreet_player(\"Daniel\")\ngreet_player(\"Alex\")\n\nFlera parametrar\ndef print_game_summary(title, rating):\n    print(f\"{title} - rated {rating}/10\")\n\nprint_game_summary(\"Hades\", 9)\n\n\nDefault-värden\ndef print_game_summary(title, rating=5):\n    print(f\"{title} - rated {rating}/10\")\n\nprint_game_summary(\"Celeste\", 10)\nprint_game_summary(\"Some Unrated Game\")   # använder default-värdet 5\n\n\nKeyword arguments\nDu kan skicka in argument med namn, i valfri ordning:\nprint_game_summary(rating=8, title=\"Hollow Knight\")",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#return-värden",
+    "href": "vecka3.html#return-värden",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "3. Return-värden",
+    "text": "3. Return-värden\nHittills har våra funktioner bara skrivit ut saker med print(). Ofta vill vi i stället att funktionen returnerar ett värde vi kan använda vidare.\ndef calculate_average_rating(ratings):\n    return sum(ratings) / len(ratings)\n\nmy_ratings = [9, 10, 7, 8.5]\naverage = calculate_average_rating(my_ratings)\nprint(f\"Average rating: {average}\")\n\n\n\n\n\n\nVarningprint() vs return\n\n\n\nprint() visar bara något i terminalen. return skickar tillbaka ett värde som du kan spara i en variabel och använda i resten av programmet. En funktion som bara har print() kan inte återanvändas lika flexibelt som en som return:ar sitt resultat.\n\n\n\nFlera returvärden\ndef get_min_max_rating(ratings):\n    return min(ratings), max(ratings)\n\nlowest, highest = get_min_max_rating(my_ratings)\nprint(f\"Lowest: {lowest}, Highest: {highest}\")",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#scope-lokala-och-globala-variabler",
+    "href": "vecka3.html#scope-lokala-och-globala-variabler",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "4. Scope – lokala och globala variabler",
+    "text": "4. Scope – lokala och globala variabler\nEn variabel som skapas inuti en funktion existerar bara där (lokal scope). Variabler utanför alla funktioner är globala.\ntotal_games = 0   # global variabel\n\ndef add_game():\n    total_games = 1   # detta är en NY lokal variabel, inte samma som ovan!\n    print(total_games)\n\nadd_game()\nprint(total_games)   # fortfarande 0\nVill du faktiskt ändra en global variabel inuti en funktion behöver du nyckelordet global — men det är oftast bättre design att låta funktionen return ett nytt värde i stället:\ndef add_game(current_total):\n    return current_total + 1\n\ntotal_games = add_game(total_games)\nprint(total_games)   # 1\n\n\n\n\n\n\nTipsBra vana\n\n\n\nFöredra funktioner som tar emot värden som parametrar och return:ar ett resultat, i stället för att läsa och ändra globala variabler. Det gör koden mycket lättare att testa och förstå.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#funktioner-som-jobbar-med-hela-gamelog",
+    "href": "vecka3.html#funktioner-som-jobbar-med-hela-gamelog",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "5. Funktioner som jobbar med hela GameLog",
+    "text": "5. Funktioner som jobbar med hela GameLog\ngames = [\n    {\"title\": \"Hades\", \"platform\": \"PC\", \"rating\": 9},\n    {\"title\": \"Celeste\", \"platform\": \"Switch\", \"rating\": 10},\n    {\"title\": \"Hollow Knight\", \"platform\": \"Switch\", \"rating\": 9.5},\n]\n\ndef filter_by_platform(games, platform):\n    return [game for game in games if game[\"platform\"] == platform]\n\ndef calculate_average(games):\n    ratings = [game[\"rating\"] for game in games]\n    return sum(ratings) / len(ratings)\n\nswitch_games = filter_by_platform(games, \"Switch\")\nprint(switch_games)\nprint(calculate_average(games))",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#moduler-dela-upp-koden-i-flera-filer",
+    "href": "vecka3.html#moduler-dela-upp-koden-i-flera-filer",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "6. Moduler – dela upp koden i flera filer",
+    "text": "6. Moduler – dela upp koden i flera filer\nNär filen växer sig lång är det dags att dela upp koden. En Python-fil är automatiskt en modul som kan importeras i en annan fil.\nSkapa en fil game_utils.py:\n# game_utils.py\n\ndef calculate_average(games):\n    ratings = [game[\"rating\"] for game in games]\n    return sum(ratings) / len(ratings)\n\ndef filter_by_platform(games, platform):\n    return [game for game in games if game[\"platform\"] == platform]\nOch i din huvudfil main.py:\n# main.py\nfrom game_utils import calculate_average, filter_by_platform\n\ngames = [\n    {\"title\": \"Hades\", \"platform\": \"PC\", \"rating\": 9},\n    {\"title\": \"Celeste\", \"platform\": \"Switch\", \"rating\": 10},\n]\n\nprint(calculate_average(games))\nDu kan också importera hela modulen och komma åt funktionerna med punktnotation:\nimport game_utils\n\nprint(game_utils.calculate_average(games))\n\n\n\n\n\n\nTipsVarför dela upp koden?\n\n\n\nMindre filer med tydligt ansvar är lättare att läsa, testa och återanvända. Det är exakt samma princip vi kommer följa när vi bygger vårt FastAPI-projekt längre fram — då blir uppdelningen i moduler avgörande.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#övningar",
+    "href": "vecka3.html#övningar",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Din första egna funktion\n\n\n\nSkriv en funktion print_welcome(name) som skriver ut ett personligt välkomstmeddelande. Anropa den med ditt eget namn.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Default-värden\n\n\n\nSkriv en funktion describe_game(title, rating=None) som skriver ut titeln, och “Not yet rated” om rating är None, annars betyget.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Räkna speltimmar\n\n\n\nSkriv en funktion calculate_total_hours(sessions) som tar en lista med speltimmar (t.ex. [2, 1.5, 3, 0.5]) och returnerar summan.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Högsta betyg\n\n\n\nSkriv en funktion find_highest_rated(games) som tar en lista med spel-dictionaries och returnerar titeln på spelet med högst betyg.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Filtrera på betyg\n\n\n\nSkriv en funktion filter_by_min_rating(games, minimum) som returnerar en ny lista med bara de spel som har rating &gt;= minimum.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Flera returvärden\n\n\n\nSkriv en funktion get_stats(ratings) som returnerar tre värden: lägsta, högsta och genomsnittliga betyget. Testa funktionen och skriv ut alla tre värden.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Egen modul\n\n\n\nSkapa en fil game_utils.py med minst tre funktioner från tidigare övningar. Importera och använd dem i en separat main.py.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Sökfunktion\n\n\n\nSkriv en funktion find_game_by_title(games, title) som söker igenom en lista med spel och returnerar spelet (dictionaryn) om det hittas, annars None. Testa både med ett spel som finns och ett som inte finns.\n\n\n\n\n\n\n\n\nViktigtÖvning 9 (utmaning) – Bygg en liten meny\n\n\n\nSkriv ett program med en while-loop som visar en meny (“1. Lägg till spel”, “2. Visa backlogg”, “3. Avsluta”), och en funktion för varje menyval. Använd input() för att läsa användarens val.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka3.html#sammanfattning",
+    "href": "vecka3.html#sammanfattning",
+    "title": "Vecka 3: Funktioner och moduler",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu kan du bryta ut kod i funktioner med parametrar, default-värden och returvärden, och dela upp ett program i flera moduler. Nästa vecka handlar om felhantering och filer — hur vi hanterar när något går fel, och hur vi kan spara GameLog-datan till en fil så att den inte försvinner varje gång programmet stängs.",
+    "crumbs": [
+      "Start",
+      "Del 1 — Python-grunderna",
+      "Vecka 3: Funktioner och moduler"
+    ]
+  },
+  {
+    "objectID": "vecka5.html",
+    "href": "vecka5.html",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "",
+    "text": "Hittills har vi representerat ett spel som en dictionary: {\"title\": \"Hades\", \"rating\": 9}. Det fungerar, men det finns inget som säkerställer att alla spel faktiskt har samma struktur, och vi kan inte enkelt koppla ihop data med beteende (funktioner som hör till just det spelet). Nu börjar del 2: objektorienterad programmering (OOP) — vi bygger om GameLog runt riktiga klasser.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndefiniera en klass med __init__ och self\nskapa (instansiera) objekt från en klass\nlägga till metoder som jobbar med objektets egna data\nskriva en tydlig strängrepresentation med __str__",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#från-dictionaries-till-riktiga-objekt",
+    "href": "vecka5.html#från-dictionaries-till-riktiga-objekt",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "",
+    "text": "Hittills har vi representerat ett spel som en dictionary: {\"title\": \"Hades\", \"rating\": 9}. Det fungerar, men det finns inget som säkerställer att alla spel faktiskt har samma struktur, och vi kan inte enkelt koppla ihop data med beteende (funktioner som hör till just det spelet). Nu börjar del 2: objektorienterad programmering (OOP) — vi bygger om GameLog runt riktiga klasser.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\ndefiniera en klass med __init__ och self\nskapa (instansiera) objekt från en klass\nlägga till metoder som jobbar med objektets egna data\nskriva en tydlig strängrepresentation med __str__",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#din-första-klass",
+    "href": "vecka5.html#din-första-klass",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "1. Din första klass",
+    "text": "1. Din första klass\nclass Game:\n    def __init__(self, title, platform, rating):\n        self.title = title\n        self.platform = platform\n        self.rating = rating\n\nhades = Game(\"Hades\", \"PC\", 9)\nceleste = Game(\"Celeste\", \"Switch\", 10)\n\nprint(hades.title)      # Hades\nprint(celeste.rating)   # 10\n\nclass Game: definierar en ny typ.\n__init__ är en konstruktor — den körs automatiskt när ett nytt objekt skapas.\nself refererar till just det objektet som skapas eller anropas. Det är alltid första parametern i en metod.\n\n\n\n\n\n\n\nTipsself är inte magi\n\n\n\nself är bara ett namn (konvention, inte ett nyckelord) för “det här specifika objektet”. hades.title och celeste.title är olika värden, trots att båda kommer från samma klass — precis som två olika dictionaries.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#attribut-och-metoder",
+    "href": "vecka5.html#attribut-och-metoder",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "2. Attribut och metoder",
+    "text": "2. Attribut och metoder\nAttribut är data som hör till objektet. Metoder är funktioner som hör till klassen och kan använda objektets attribut via self.\nclass Game:\n    def __init__(self, title, platform, rating):\n        self.title = title\n        self.platform = platform\n        self.rating = rating\n\n    def is_highly_rated(self):\n        return self.rating &gt;= 8\n\n    def describe(self):\n        print(f\"{self.title} ({self.platform}) - {self.rating}/10\")\n\nhades = Game(\"Hades\", \"PC\", 9)\nhades.describe()                  # Hades (PC) - 9/10\nprint(hades.is_highly_rated())    # True",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#flera-objekt-samma-klass",
+    "href": "vecka5.html#flera-objekt-samma-klass",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "3. Flera objekt, samma klass",
+    "text": "3. Flera objekt, samma klass\ngames = [\n    Game(\"Hades\", \"PC\", 9),\n    Game(\"Celeste\", \"Switch\", 10),\n    Game(\"Hollow Knight\", \"Switch\", 9.5),\n]\n\nfor game in games:\n    game.describe()\nJämför med förra veckans lista av dictionaries — strukturen är densamma, men nu vet vi garanterat att varje spel har exakt de attributen, och vi kan lägga logik direkt på objekten i stället för i lösa funktioner.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#str-en-snyggare-utskrift",
+    "href": "vecka5.html#str-en-snyggare-utskrift",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "4. str — en snyggare utskrift",
+    "text": "4. str — en snyggare utskrift\nclass Game:\n    def __init__(self, title, platform, rating):\n        self.title = title\n        self.platform = platform\n        self.rating = rating\n\n    def __str__(self):\n        return f\"{self.title} ({self.platform}) - {self.rating}/10\"\n\nhades = Game(\"Hades\", \"PC\", 9)\nprint(hades)   # Hades (PC) - 9/10, i stället för &lt;__main__.Game object at 0x...&gt;\n__str__ är en av Pythons dundermetoder (“double underscore”) — speciella metoder som Python själv anropar automatiskt i vissa situationer. print() anropar __str__ bakom kulisserna.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#klassattribut-vs-instansattribut",
+    "href": "vecka5.html#klassattribut-vs-instansattribut",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "5. Klassattribut vs instansattribut",
+    "text": "5. Klassattribut vs instansattribut\nclass Game:\n    total_games_created = 0   # klassattribut - delas av ALLA objekt\n\n    def __init__(self, title):\n        self.title = title              # instansattribut - unikt per objekt\n        Game.total_games_created += 1\n\nhades = Game(\"Hades\")\nceleste = Game(\"Celeste\")\n\nprint(Game.total_games_created)   # 2\n\n\n\n\n\n\nVarningVanligt nybörjarfel\n\n\n\nInstansattribut (self.title) hör till det enskilda objektet. Klassattribut (total_games_created) delas mellan alla objekt av klassen. Blanda inte ihop dem — om du är osäker, fråga dig: “hör den här datan till ett specifikt spel, eller till alla spel som koncept?”",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#övningar",
+    "href": "vecka5.html#övningar",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Din första klass\n\n\n\nSkapa en klass Game med title, platform och rating. Skapa tre olika objekt och skriv ut deras title var för sig.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Metoder\n\n\n\nLägg till en metod is_completed_worthy() på Game som returnerar True om rating &gt;= 7. Testa på flera objekt.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – str\n\n\n\nLägg till __str__ på Game så att print(game) visar en läsbar rad, t.ex. \"Hades (PC) - 9/10\".\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – En Player-klass\n\n\n\nSkapa en klass Player med name och favorite_genre. Skapa två spelare och skriv ut deras information.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Lista av objekt\n\n\n\nSkapa en lista med minst 5 Game-objekt. Loopa igenom listan och skriv bara ut titlarna på spel som är is_completed_worthy().\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Klassattribut\n\n\n\nLägg till ett klassattribut total_games på Game som räknar hur många Game-objekt som skapats totalt. Skapa flera spel och skriv ut totalen.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Genomsnitt via metod\n\n\n\nSkriv en funktion calculate_average_rating(games) som tar en lista med Game-objekt (inte dictionaries!) och returnerar genomsnittsbetyget.\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Uppdatera ett objekt\n\n\n\nLägg till en metod update_rating(self, new_rating) på Game som ändrar self.rating, men bara om new_rating är mellan 1 och 10 (annars, skriv ut ett felmeddelande — vi bygger vidare med riktig felhantering här nästa vecka).",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka5.html#sammanfattning",
+    "href": "vecka5.html#sammanfattning",
+    "title": "Vecka 5: Klasser och objekt",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nNu representerar GameLog spel som riktiga objekt i stället för lösa dictionaries, med både data och beteende samlat på ett ställe. Nästa vecka fördjupar vi oss i inkapsling och komposition — hur vi skyddar ett objekts data och bygger objekt som består av andra objekt, som en Playthrough som innehåller både ett Game och en Player.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 5: Klasser och objekt"
+    ]
+  },
+  {
+    "objectID": "vecka8.html",
+    "href": "vecka8.html",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "",
+    "text": "Att skriva __init__ för hand, en rad per attribut, blir repetitivt. Den här veckan lär vi oss @dataclass — ett modernare sätt att skriva klasser som mest lagrar data — samt type hints och Enum. Det här är sista veckan i OOP-delen, och den förbereder oss direkt för Pydantic-modellerna i FastAPI-delen.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nanvända @dataclass för att slippa skriva __init__ för hand\nanvända type hints för tydligare kod\nanvända Enum för fasta uppsättningar av värden\nsätta default-värden korrekt, inklusive för listor",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#en-snabbare-väg-att-skriva-klasser",
+    "href": "vecka8.html#en-snabbare-väg-att-skriva-klasser",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "",
+    "text": "Att skriva __init__ för hand, en rad per attribut, blir repetitivt. Den här veckan lär vi oss @dataclass — ett modernare sätt att skriva klasser som mest lagrar data — samt type hints och Enum. Det här är sista veckan i OOP-delen, och den förbereder oss direkt för Pydantic-modellerna i FastAPI-delen.\n\n\n\n\n\n\nNoteraVeckans mål\n\n\n\nEfter den här lektionen ska du kunna:\n\nanvända @dataclass för att slippa skriva __init__ för hand\nanvända type hints för tydligare kod\nanvända Enum för fasta uppsättningar av värden\nsätta default-värden korrekt, inklusive för listor",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#type-hints-en-snabb-påminnelse",
+    "href": "vecka8.html#type-hints-en-snabb-påminnelse",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "1. Type hints — en snabb påminnelse",
+    "text": "1. Type hints — en snabb påminnelse\nType hints är valfria “typannoteringar” som gör koden tydligare, men som Python inte kontrollerar vid körning (till skillnad från t.ex. Java).\ndef calculate_average(ratings: list[float]) -&gt; float:\n    return sum(ratings) / len(ratings)\n\ntitle: str = \"Hades\"\nrating: float = 9.0\nVi har kunnat skriva kod utan type hints hela kursen, men från och med nu använder vi dem konsekvent — det gör klasserna vi bygger den här veckan mycket tydligare, och är standard i moderna Python-projekt (inklusive FastAPI).",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#klassen-vi-hade-innan",
+    "href": "vecka8.html#klassen-vi-hade-innan",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "2. Klassen vi hade innan",
+    "text": "2. Klassen vi hade innan\nclass Game:\n    def __init__(self, title, platform, rating):\n        self.title = title\n        self.platform = platform\n        self.rating = rating\n\n    def __str__(self):\n        return f\"{self.title} ({self.platform}) - {self.rating}/10\"\nTre attribut, och redan en hel del kod bara för att lagra dem.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#samma-klass-med-dataclass",
+    "href": "vecka8.html#samma-klass-med-dataclass",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "3. Samma klass med @dataclass",
+    "text": "3. Samma klass med @dataclass\nfrom dataclasses import dataclass\n\n@dataclass\nclass Game:\n    title: str\n    platform: str\n    rating: float\n\nhades = Game(\"Hades\", \"PC\", 9)\nprint(hades)             # Game(title='Hades', platform='PC', rating=9)\nprint(hades.title)       # Hades\n@dataclass genererar automatiskt __init__ och en läsbar __str__/__repr__, utifrån type hints. Mindre kod, samma resultat.\n\nDefault-värden\n@dataclass\nclass Game:\n    title: str\n    platform: str\n    rating: float = 0.0\n    completed: bool = False\n\nceleste = Game(\"Celeste\", \"Switch\")   # rating och completed får default-värden\nprint(celeste)\n\n\n\n\n\n\nVarningFarlig fälla: mutable default-värden\n\n\n\nDu kan inte skriva tags: list = [] direkt som default i en dataclass — Python kastar ett fel. Alla instanser skulle annars dela samma lista, vilket nästan alltid är en bugg. Lösningen är field(default_factory=list):\nfrom dataclasses import dataclass, field\n\n@dataclass\nclass Game:\n    title: str\n    tags: list[str] = field(default_factory=list)\nNu får varje nytt objekt sin egen, tomma lista.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#metoder-fungerar-precis-som-vanligt",
+    "href": "vecka8.html#metoder-fungerar-precis-som-vanligt",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "4. Metoder fungerar precis som vanligt",
+    "text": "4. Metoder fungerar precis som vanligt\n@dataclass ersätter bara __init__/__repr__ — du kan fortfarande skriva egna metoder precis som innan.\n@dataclass\nclass Game:\n    title: str\n    platform: str\n    rating: float = 0.0\n\n    def is_highly_rated(self) -&gt; bool:\n        return self.rating &gt;= 8",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#enum-fasta-uppsättningar-av-värden",
+    "href": "vecka8.html#enum-fasta-uppsättningar-av-värden",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "5. Enum — fasta uppsättningar av värden",
+    "text": "5. Enum — fasta uppsättningar av värden\nJust nu kan platform vara vilken sträng som helst — \"PC\", \"pc\", \"Personal Computer\"… alla olika, alla buggar som väntar på att hända. Enum löser det genom att definiera en fast, begränsad uppsättning giltiga värden.\nfrom enum import Enum\n\nclass Platform(Enum):\n    PC = \"PC\"\n    PLAYSTATION = \"PlayStation\"\n    XBOX = \"Xbox\"\n    SWITCH = \"Switch\"\n\n@dataclass\nclass Game:\n    title: str\n    platform: Platform\n    rating: float = 0.0\n\nhades = Game(\"Hades\", Platform.PC, 9)\nprint(hades.platform)          # Platform.PC\nprint(hades.platform.value)    # \"PC\"\nif hades.platform == Platform.PC:\n    print(\"Runs on PC!\")\nEtt annat vanligt exempel — status på en playthrough:\nclass Status(Enum):\n    NOT_STARTED = \"not_started\"\n    IN_PROGRESS = \"in_progress\"\n    COMPLETED = \"completed\"\n    DROPPED = \"dropped\"\n\n\n\n\n\n\nTipsVarför Enum i stället för strängar?\n\n\n\nMed en vanlig sträng kan du råka skriva \"Compelted\" (stavfel) utan att något varnar dig. Med Enum finns bara ett begränsat antal giltiga alternativ, och de flesta editorer ger dig autocomplete på dem.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#övningar",
+    "href": "vecka8.html#övningar",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "Övningar",
+    "text": "Övningar\n\n\n\n\n\n\nViktigtÖvning 1 – Omvandla till dataclass\n\n\n\nBygg om din Game-klass från tidigare veckor till en @dataclass med title: str, platform: str och rating: float.\n\n\n\n\n\n\n\n\nViktigtÖvning 2 – Default-värden\n\n\n\nLägg till completed: bool = False och hours_played: float = 0.0 som default-värden på Game.\n\n\n\n\n\n\n\n\nViktigtÖvning 3 – Metod på en dataclass\n\n\n\nLägg till en metod is_backlog_worthy() på Game som returnerar True om hours_played == 0.\n\n\n\n\n\n\n\n\nViktigtÖvning 4 – Enum för plattform\n\n\n\nSkapa en Enum-klass Platform med minst fyra plattformar. Använd den som typen på platform-attributet i Game.\n\n\n\n\n\n\n\n\nViktigtÖvning 5 – Enum för status\n\n\n\nSkapa en Enum-klass Status med NOT_STARTED, IN_PROGRESS, COMPLETED, DROPPED. Skapa en Playthrough-dataclass som använder Status som typen på ett status-attribut.\n\n\n\n\n\n\n\n\nViktigtÖvning 6 – Lista med default_factory\n\n\n\nLägg till tags: list[str] på Game med rätt sätt att sätta ett default-värde (en tom lista), utan att alla objekt delar samma lista. Bevisa att det fungerar genom att lägga till en tag på ett objekt och visa att ett annat objekts tags är opåverkad.\n\n\n\n\n\n\n\n\nViktigtÖvning 7 – Filtrera på Enum-värde\n\n\n\nSkapa en lista med Game-objekt med olika Platform-värden. Skriv en funktion som returnerar bara de spel som har en specifik plattform, jämfört med Enum-värdet (inte en sträng).\n\n\n\n\n\n\n\n\nViktigtÖvning 8 (utmaning) – Hela GameLog-datamodellen\n\n\n\nDefiniera dataclasses för Game, Player och Playthrough (med komposition som i vecka 6), plus Enum-klasser för Platform och Status. Skapa några exempelobjekt och skriv ut en sammanfattning av hela backloggen.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  },
+  {
+    "objectID": "vecka8.html#sammanfattning",
+    "href": "vecka8.html#sammanfattning",
+    "title": "Vecka 8: Dataclasses och moderna idiom",
+    "section": "Sammanfattning",
+    "text": "Sammanfattning\nDet här avslutar OOP-delen av kursen. Du har nu ett kompakt, tydligt sätt att definiera datastrukturer med @dataclass, Enum och type hints — precis det mönster vi återanvänder rakt av när vi definierar Pydantic-modeller i FastAPI nästa vecka. Del 3 börjar nu: API:er och FastAPI, där GameLog äntligen blir tillgängligt över nätverket.",
+    "crumbs": [
+      "Start",
+      "Del 2 — Objektorienterad programmering",
+      "Vecka 8: Dataclasses och moderna idiom"
+    ]
+  }
+]

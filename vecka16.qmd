@@ -1,0 +1,156 @@
+---
+title: "Vecka 16: Fördjupning och buffertvecka"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## En vecka att landa i
+
+Del 5 (databaser) har varit den tyngsta delen av kursen — SQL, ORM och att koppla ihop allt med FastAPI, allt på bara några veckor. Den här veckan har inget stort nytt koncept. I stället refaktorerar vi hela GameLog-appen end-to-end, fördjupar oss i relationer, och ger utrymme åt den som ligger efter att komma ikapp.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- gå igenom hela GameLog-projektet och identifiera vad som saknas eller kan förbättras
+- använda `joinedload` för att hämta relaterad data effektivt
+- skriva lite mer avancerade queries: filtrering, sortering, aggregering
+:::
+
+## 1. Statuskontroll — hela projektet i ett svep
+
+Innan vi går vidare, en checklista för hela GameLog-API:et hittills:
+
+::: {.callout-tip}
+## Checklista
+- [ ] `games`, `players` och `playthroughs` har varsin komplett CRUD-router
+- [ ] Alla endpoints använder `Depends(get_db)`, ingen kod läser längre från en lista i minnet
+- [ ] Alla "in"-modeller (`GameCreate`) och "ut"-modeller (`GameOut`) är tydligt separerade
+- [ ] `404` returneras konsekvent när en resurs inte hittas
+- [ ] Projektet är uppdelat i `models.py` (SQLAlchemy), `schemas.py` (Pydantic) och `routers/`
+:::
+
+Om något saknas — nu är veckan att fylla i det, innan vi bygger vidare med autentisering och testning.
+
+## 2. N+1-problemet
+
+```python
+playthroughs = db.query(PlaythroughModel).all()
+for p in playthroughs:
+    print(p.game.title)   # varje rad triggar en NY databasquery!
+```
+
+Om du har 100 playthroughs innebär loopen ovan **101 databasqueries** — en för att hämta alla playthroughs, och sedan en extra för varje spel som hämtas via `p.game`. Det kallas **N+1-problemet** och är en av de vanligaste prestandafällorna med ORM:er.
+
+### Lösningen: joinedload
+
+```python
+from sqlalchemy.orm import joinedload
+
+playthroughs = (
+    db.query(PlaythroughModel)
+    .options(joinedload(PlaythroughModel.game), joinedload(PlaythroughModel.player))
+    .all()
+)
+
+for p in playthroughs:
+    print(p.game.title)   # ingen extra query - datan hämtades redan
+```
+
+`joinedload` säger åt SQLAlchemy att hämta de kopplade objekten i **samma** databasquery (med en `JOIN`, precis som i vecka 13), i stället för en separat query per rad.
+
+::: {.callout-tip}
+## När spelar detta roll?
+Med 3 playthroughs märker du ingen skillnad. Med 10 000 gör det stor skillnad. Bra att känna till mönstret redan nu — det är en av de vanligaste sakerna som gör riktiga API:er långsamma.
+:::
+
+## 3. Mer avancerad filtrering
+
+```python
+# Flera villkor kombinerade
+games = (
+    db.query(GameModel)
+    .filter(GameModel.platform == "PC", GameModel.rating >= 8)
+    .all()
+)
+
+# Sortering
+games = db.query(GameModel).order_by(GameModel.rating.desc()).all()
+
+# Paginering
+games = db.query(GameModel).offset(0).limit(10).all()
+
+# Textsökning
+from sqlalchemy import func
+games = db.query(GameModel).filter(GameModel.title.ilike(f"%{search_term}%")).all()
+```
+
+## 4. Aggregering
+
+```python
+from sqlalchemy import func
+
+# Genomsnittligt betyg
+average_rating = db.query(func.avg(GameModel.rating)).scalar()
+
+# Antal spel per plattform
+counts_per_platform = (
+    db.query(GameModel.platform, func.count(GameModel.id))
+    .group_by(GameModel.platform)
+    .all()
+)
+```
+
+Det här motsvarar `AVG()` och `GROUP BY` från SQL-veckan (vecka 13) — fast uttryckt genom ORM:et.
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Gå igenom checklistan
+Gå igenom checklistan ovan mot ditt eget GameLog-projekt. Åtgärda det som saknas innan du fortsätter.
+:::
+
+::: {.callout-important}
+## Övning 2 – Hitta N+1-problemet
+Skriv en endpoint som listar alla playthroughs med kopplat spel och spelare **utan** `joinedload`. Räkna (eller logga) hur många databasqueries som körs.
+:::
+
+::: {.callout-important}
+## Övning 3 – Fixa med joinedload
+Skriv om samma endpoint med `joinedload` för båda relationerna, och verifiera att antalet queries minskar.
+:::
+
+::: {.callout-important}
+## Övning 4 – Sök och sortera
+Lägg till query-parametrar på `GET /games/` för fritextsökning i titeln (`ilike`) och sortering på valfritt fält.
+:::
+
+::: {.callout-important}
+## Övning 5 – Paginering på riktigt
+Lägg till `skip`/`limit` som query-parametrar på `GET /games/`, kopplade till `.offset()`/`.limit()`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Statistik-endpoint med aggregering
+Bygg om `/games/stats`-endpointen (från tidigare veckor) till att använda `func.avg()` och `func.count()` i stället för att räkna manuellt i Python.
+:::
+
+::: {.callout-important}
+## Övning 7 – Antal per plattform
+Skapa en endpoint `GET /games/stats/by-platform` som returnerar antal spel grupperat per plattform, med `GROUP BY`.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Refaktorera till en service-nivå
+Flytta all databaslogik (queries) ut från routern till egna funktioner i en ny fil, t.ex. `services/games.py` (t.ex. `get_all_games(db)`, `create_game(db, game)`). Routern ska bara ta emot requesten, anropa service-funktionen, och returnera svaret. Det här mönstret gör koden lättare att testa — precis vad vi gör nästa vecka.
+:::
+
+## Sammanfattning
+
+Den här veckan har handlat om att befästa och förbättra, inte lära nytt: du har sett N+1-problemet och `joinedload`, mer avancerad filtrering och sortering, och aggregering med `func`. Om du gjorde utmaningen har du dessutom börjat separera databaslogik från routers — ett mönster som gör allt lättare att testa. Och testning är precis vad de två sista veckorna handlar om.

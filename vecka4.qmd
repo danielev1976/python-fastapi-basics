@@ -1,0 +1,237 @@
+---
+title: "Vecka 4: Felhantering och filer"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Sista veckan innan vi går vidare till OOP
+
+Hittills har vi antagit att allt går som planerat: användaren skriver rätt saker, filer finns där de ska. Den här veckan lär vi oss hantera när saker går fel — och, minst lika viktigt, hur vi **sparar** GameLog-datan till en fil så att backloggen faktiskt finns kvar nästa gång programmet startas.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- fånga och hantera fel med `try`/`except`
+- skapa egna undantag när det behövs
+- läsa och skriva vanliga textfiler
+- läsa och skriva JSON-data, för att spara GameLog permanent
+:::
+
+## 1. När saker går fel
+
+Testa att köra det här:
+
+```python
+rating = int(input("Enter a rating (1-10): "))
+```
+
+Skriver användaren "tio" i stället för "10" kraschar programmet med ett `ValueError`. Ett krasch mitt i programmet är sällan vad vi vill ha.
+
+## 2. try / except
+
+```python
+try:
+    rating = int(input("Enter a rating (1-10): "))
+    print(f"You rated the game {rating}/10")
+except ValueError:
+    print("That wasn't a valid number. Please enter digits only.")
+```
+
+Koden i `try`-blocket körs. Om ett fel av rätt typ uppstår, hoppar Python direkt till `except`-blocket i stället för att krascha.
+
+### Flera except-block
+
+Olika typer av fel kan hanteras på olika sätt:
+
+```python
+games = {"Hades": 9, "Celeste": 10}
+
+try:
+    title = input("Which game do you want to check? ")
+    print(games[title])
+except KeyError:
+    print("That game isn't in your backlog.")
+except Exception as error:
+    print(f"Something unexpected happened: {error}")
+```
+
+::: {.callout-tip}
+## Specifika fel före generella
+Fånga alltid de specifika feltyperna (`ValueError`, `KeyError`, osv.) före ett generellt `except Exception`. Annars riskerar du att gömma buggar du egentligen borde upptäcka och åtgärda.
+:::
+
+### else och finally
+
+```python
+try:
+    rating = int(input("Enter a rating: "))
+except ValueError:
+    print("Invalid input.")
+else:
+    print("Great, that was a valid rating!")   # körs bara om inget fel uppstod
+finally:
+    print("Done checking the rating.")          # körs alltid, fel eller inte
+```
+
+## 3. Skapa egna undantag
+
+Ibland vill vi signalera ett fel som är specifikt för vår egen domän.
+
+```python
+def add_rating(rating):
+    if rating < 1 or rating > 10:
+        raise ValueError("Rating must be between 1 and 10")
+    return rating
+
+try:
+    add_rating(15)
+except ValueError as error:
+    print(f"Could not add rating: {error}")
+```
+
+`raise` kastar ett undantag manuellt — precis som Python gör automatiskt vid t.ex. felaktig konvertering.
+
+## 4. Läsa och skriva textfiler
+
+```python
+# Skriva till en fil
+with open("backlog.txt", "w") as file:
+    file.write("Hades\n")
+    file.write("Celeste\n")
+    file.write("Hollow Knight\n")
+```
+
+```python
+# Läsa från en fil
+with open("backlog.txt", "r") as file:
+    for line in file:
+        print(line.strip())   # strip() tar bort radbrytningen
+```
+
+::: {.callout-tip}
+## Varför with?
+`with open(...) as file:` ser till att filen stängs automatiskt, även om något går fel medan du läser eller skriver. Skriv alltid filhantering på det här sättet.
+:::
+
+### Lägga till i en befintlig fil
+
+```python
+with open("backlog.txt", "a") as file:   # "a" = append
+    file.write("Stardew Valley\n")
+```
+
+| Läge | Betyder |
+|---|---|
+| `"r"` | läsa (filen måste finnas) |
+| `"w"` | skriva, skriver över hela filen |
+| `"a"` | skriva, lägger till på slutet |
+
+## 5. JSON — spara riktig data
+
+En textfil rad för rad fungerar för enkla listor, men GameLog behöver spara strukturerad data (titel, plattform, betyg...). Då är **JSON** rätt verktyg — och det mappar nästan perfekt mot Pythons egna dictionaries och listor.
+
+```python
+import json
+
+games = [
+    {"title": "Hades", "platform": "PC", "rating": 9},
+    {"title": "Celeste", "platform": "Switch", "rating": 10},
+]
+
+# Skriva till en JSON-fil
+with open("games.json", "w") as file:
+    json.dump(games, file, indent=2)
+```
+
+```python
+# Läsa från en JSON-fil
+with open("games.json", "r") as file:
+    loaded_games = json.load(file)
+
+print(loaded_games)
+print(type(loaded_games))   # <class 'list'>
+```
+
+::: {.callout-warning}
+## json.dump vs json.dumps
+`json.dump(data, file)` skriver direkt till en öppen fil. `json.dumps(data)` (med ett extra "s") returnerar JSON som en **sträng**, praktiskt om du vill skicka datan vidare i stället för att spara den till disk. Vi kommer använda båda framöver.
+:::
+
+### Kombinera med felhantering
+
+Filen kanske inte finns första gången programmet körs — det ska vi hantera snyggt, inte krascha på:
+
+```python
+def load_games(filename="games.json"):
+    try:
+        with open(filename, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("No saved backlog found, starting with an empty one.")
+        return []
+
+games = load_games()
+```
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Säker inmatning
+Skriv ett program som frågar användaren efter ett betyg med `input()`, konverterar det till `int`, och hanterar `ValueError` med ett vänligt felmeddelande i stället för en krasch.
+:::
+
+::: {.callout-important}
+## Övning 2 – Säker sökning
+Utgå från en dictionary `games` med några spel och betyg. Fråga användaren efter en titel och skriv ut betyget. Hantera `KeyError` om spelet inte finns.
+:::
+
+::: {.callout-important}
+## Övning 3 – Egen validering
+Skriv en funktion `validate_rating(rating)` som `raise`:ar ett `ValueError` om betyget inte är mellan 1 och 10. Testa funktionen med både ett giltigt och ett ogiltigt värde, och fånga felet med `try`/`except`.
+:::
+
+::: {.callout-important}
+## Övning 4 – Skriv din backlogg till en fil
+Skriv en lista med speltitlar till en textfil `backlog.txt`, en titel per rad.
+:::
+
+::: {.callout-important}
+## Övning 5 – Läs och räkna
+Läs `backlog.txt` från övning 4 och skriv ut hur många spel som finns i filen, samt själva listan.
+:::
+
+::: {.callout-important}
+## Övning 6 – Spara som JSON
+Skapa en lista med minst 3 spel-dictionaries (`title`, `platform`, `rating`). Spara den till `games.json` med `json.dump`.
+:::
+
+::: {.callout-important}
+## Övning 7 – Läs tillbaka och filtrera
+Läs `games.json` från övning 6 med `json.load`, och skriv ut bara titlarna på spel med `rating >= 8`.
+:::
+
+::: {.callout-important}
+## Övning 8 – Robust inläsning
+Skriv en funktion `load_games(filename)` som läser en JSON-fil och returnerar en tom lista i stället för att krascha om filen inte finns (`FileNotFoundError`). Testa med både ett filnamn som finns och ett som inte finns.
+:::
+
+::: {.callout-important}
+## Övning 9 (utmaning) – Lägg till och spara
+Skriv ett program som: (1) läser `games.json` om den finns, annars startar med en tom lista, (2) frågar användaren efter ett nytt spel (titel, plattform, betyg) med `input()`, (3) lägger till spelet i listan, och (4) sparar hela listan tillbaka till `games.json`.
+:::
+
+::: {.callout-important}
+## Övning 10 (utmaning) – Felsäker meny
+Bygg vidare på menyprogrammet från vecka 3. Se till att inget menyval kan krascha programmet — all `input()` som konverteras till tal ska vara omsluten av `try`/`except`.
+:::
+
+## Sammanfattning
+
+Nu klarar programmet av felaktig inmatning utan att krascha, och du kan spara och läsa in GameLog-datan som JSON — vilket betyder att backloggen faktiskt överlever mellan körningar. Det här är sista veckan i Python-grunderna. Nästa vecka börjar **del 2: objektorienterad programmering**, där vi modellerar `Game`, `Player` och `Playthrough` som riktiga klasser i stället för lösa dictionaries.

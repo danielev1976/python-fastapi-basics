@@ -1,0 +1,207 @@
+---
+title: "Vecka 8: Dataclasses och moderna idiom"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## En snabbare väg att skriva klasser
+
+Att skriva `__init__` för hand, en rad per attribut, blir repetitivt. Den här veckan lär vi oss `@dataclass` — ett modernare sätt att skriva klasser som mest lagrar data — samt type hints och `Enum`. Det här är sista veckan i OOP-delen, och den förbereder oss direkt för Pydantic-modellerna i FastAPI-delen.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- använda `@dataclass` för att slippa skriva `__init__` för hand
+- använda type hints för tydligare kod
+- använda `Enum` för fasta uppsättningar av värden
+- sätta default-värden korrekt, inklusive för listor
+:::
+
+## 1. Type hints — en snabb påminnelse
+
+Type hints är valfria "typannoteringar" som gör koden tydligare, men som Python **inte** kontrollerar vid körning (till skillnad från t.ex. Java).
+
+```python
+def calculate_average(ratings: list[float]) -> float:
+    return sum(ratings) / len(ratings)
+
+title: str = "Hades"
+rating: float = 9.0
+```
+
+Vi har kunnat skriva kod utan type hints hela kursen, men från och med nu använder vi dem konsekvent — det gör klasserna vi bygger den här veckan mycket tydligare, och är standard i moderna Python-projekt (inklusive FastAPI).
+
+## 2. Klassen vi hade innan
+
+```python
+class Game:
+    def __init__(self, title, platform, rating):
+        self.title = title
+        self.platform = platform
+        self.rating = rating
+
+    def __str__(self):
+        return f"{self.title} ({self.platform}) - {self.rating}/10"
+```
+
+Tre attribut, och redan en hel del kod bara för att lagra dem.
+
+## 3. Samma klass med @dataclass
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Game:
+    title: str
+    platform: str
+    rating: float
+
+hades = Game("Hades", "PC", 9)
+print(hades)             # Game(title='Hades', platform='PC', rating=9)
+print(hades.title)       # Hades
+```
+
+`@dataclass` genererar automatiskt `__init__` **och** en läsbar `__str__`/`__repr__`, utifrån type hints. Mindre kod, samma resultat.
+
+### Default-värden
+
+```python
+@dataclass
+class Game:
+    title: str
+    platform: str
+    rating: float = 0.0
+    completed: bool = False
+
+celeste = Game("Celeste", "Switch")   # rating och completed får default-värden
+print(celeste)
+```
+
+::: {.callout-warning}
+## Farlig fälla: mutable default-värden
+Du kan **inte** skriva `tags: list = []` direkt som default i en dataclass — Python kastar ett fel. Alla instanser skulle annars dela **samma** lista, vilket nästan alltid är en bugg. Lösningen är `field(default_factory=list)`:
+
+```python
+from dataclasses import dataclass, field
+
+@dataclass
+class Game:
+    title: str
+    tags: list[str] = field(default_factory=list)
+```
+
+Nu får varje nytt objekt sin egen, tomma lista.
+:::
+
+## 4. Metoder fungerar precis som vanligt
+
+`@dataclass` ersätter bara `__init__`/`__repr__` — du kan fortfarande skriva egna metoder precis som innan.
+
+```python
+@dataclass
+class Game:
+    title: str
+    platform: str
+    rating: float = 0.0
+
+    def is_highly_rated(self) -> bool:
+        return self.rating >= 8
+```
+
+## 5. Enum — fasta uppsättningar av värden
+
+Just nu kan `platform` vara vilken sträng som helst — `"PC"`, `"pc"`, `"Personal Computer"`... alla olika, alla buggar som väntar på att hända. `Enum` löser det genom att definiera en fast, begränsad uppsättning giltiga värden.
+
+```python
+from enum import Enum
+
+class Platform(Enum):
+    PC = "PC"
+    PLAYSTATION = "PlayStation"
+    XBOX = "Xbox"
+    SWITCH = "Switch"
+
+@dataclass
+class Game:
+    title: str
+    platform: Platform
+    rating: float = 0.0
+
+hades = Game("Hades", Platform.PC, 9)
+print(hades.platform)          # Platform.PC
+print(hades.platform.value)    # "PC"
+```
+
+```python
+if hades.platform == Platform.PC:
+    print("Runs on PC!")
+```
+
+Ett annat vanligt exempel — status på en playthrough:
+
+```python
+class Status(Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    DROPPED = "dropped"
+```
+
+::: {.callout-tip}
+## Varför Enum i stället för strängar?
+Med en vanlig sträng kan du råka skriva `"Compelted"` (stavfel) utan att något varnar dig. Med `Enum` finns bara ett begränsat antal giltiga alternativ, och de flesta editorer ger dig autocomplete på dem.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Omvandla till dataclass
+Bygg om din `Game`-klass från tidigare veckor till en `@dataclass` med `title: str`, `platform: str` och `rating: float`.
+:::
+
+::: {.callout-important}
+## Övning 2 – Default-värden
+Lägg till `completed: bool = False` och `hours_played: float = 0.0` som default-värden på `Game`.
+:::
+
+::: {.callout-important}
+## Övning 3 – Metod på en dataclass
+Lägg till en metod `is_backlog_worthy()` på `Game` som returnerar `True` om `hours_played == 0`.
+:::
+
+::: {.callout-important}
+## Övning 4 – Enum för plattform
+Skapa en `Enum`-klass `Platform` med minst fyra plattformar. Använd den som typen på `platform`-attributet i `Game`.
+:::
+
+::: {.callout-important}
+## Övning 5 – Enum för status
+Skapa en `Enum`-klass `Status` med `NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`, `DROPPED`. Skapa en `Playthrough`-dataclass som använder `Status` som typen på ett `status`-attribut.
+:::
+
+::: {.callout-important}
+## Övning 6 – Lista med default_factory
+Lägg till `tags: list[str]` på `Game` med rätt sätt att sätta ett default-värde (en tom lista), utan att alla objekt delar samma lista. Bevisa att det fungerar genom att lägga till en tag på ett objekt och visa att ett annat objekts `tags` är opåverkad.
+:::
+
+::: {.callout-important}
+## Övning 7 – Filtrera på Enum-värde
+Skapa en lista med `Game`-objekt med olika `Platform`-värden. Skriv en funktion som returnerar bara de spel som har en specifik plattform, jämfört med `Enum`-värdet (inte en sträng).
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Hela GameLog-datamodellen
+Definiera dataclasses för `Game`, `Player` och `Playthrough` (med komposition som i vecka 6), plus `Enum`-klasser för `Platform` och `Status`. Skapa några exempelobjekt och skriv ut en sammanfattning av hela backloggen.
+:::
+
+## Sammanfattning
+
+Det här avslutar OOP-delen av kursen. Du har nu ett kompakt, tydligt sätt att definiera datastrukturer med `@dataclass`, `Enum` och type hints — precis det mönster vi återanvänder rakt av när vi definierar Pydantic-modeller i FastAPI nästa vecka. Del 3 börjar nu: **API:er och FastAPI**, där GameLog äntligen blir tillgängligt över nätverket.

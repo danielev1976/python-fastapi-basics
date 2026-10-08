@@ -1,0 +1,57 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "GameLog"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Start
+  sidebar:
+    style: docked
+    search: true
+    contents:
+      - href: index.qmd
+        text: Kursöversikt
+      - section: "Del 1 — Python-grunderna"
+        contents:
+          - vecka1.qmd
+          - vecka2.qmd
+          - vecka3.qmd
+          - vecka4.qmd
+      - section: "Del 2 — Objektorienterad programmering"
+        contents:
+          - vecka5.qmd
+          - vecka6.qmd
+          - vecka7.qmd
+          - vecka8.qmd
+      - section: "Del 3 — API:er och FastAPI"
+        contents:
+          - vecka9.qmd
+          - vecka10.qmd
+          - vecka11.qmd
+      - section: "Del 4 — Bygga API:et"
+        contents:
+          - vecka12.qmd
+      - section: "Del 5 — Databaser"
+        contents:
+          - vecka13.qmd
+          - vecka14.qmd
+          - vecka15.qmd
+          - vecka16.qmd
+      - section: "Del 6 — Sista biten och projekt"
+        contents:
+          - vecka17.qmd
+          - vecka18.qmd
+  page-footer: "GameLog — Python från grunden"
+
+format:
+  html:
+    theme: [cosmo, styles.scss]
+    toc: true
+    toc-depth: 2
+    code-copy: true
+    highlight-style: github
+
+lang: sv

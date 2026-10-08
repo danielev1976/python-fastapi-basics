@@ -1,0 +1,193 @@
+---
+title: "Vecka 11: Projektstruktur och routers"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Från en fil till ett riktigt projekt
+
+Hittills har all vår FastAPI-kod legat i en enda `main.py`. Det fungerar för ett par endpoints, men GameLog kommer snart ha endpoints för spel, spelare *och* playthroughs. Den här veckan strukturerar vi om projektet i flera filer, precis som vi gjorde med moduler i vecka 3 — fast med FastAPI:s egna verktyg för det: **routers** och **dependency injection**.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- dela upp en FastAPI-app i flera filer med `APIRouter`
+- organisera ett projekt i en tydlig mappstruktur
+- förstå grunderna i `Depends()` för delad logik mellan endpoints
+:::
+
+## 1. En rimlig mappstruktur
+
+```
+gamelog/
+├── main.py
+├── models.py          # Pydantic-modeller
+├── routers/
+│   ├── __init__.py
+│   ├── games.py
+│   └── players.py
+└── data.py             # tillfällig "databas" i minnet
+```
+
+Vi kommer bygga vidare på den här strukturen resten av kursen — när vi lägger till en riktig databas senare byts bara `data.py` ut, resten av strukturen står kvar.
+
+## 2. models.py — alla Pydantic-modeller på ett ställe
+
+```python
+# models.py
+from pydantic import BaseModel
+from typing import Optional
+
+class GameCreate(BaseModel):
+    title: str
+    platform: str
+    rating: float
+
+class GameOut(BaseModel):
+    id: int
+    title: str
+    platform: str
+    rating: float
+
+class PlayerCreate(BaseModel):
+    name: str
+
+class PlayerOut(BaseModel):
+    id: int
+    name: str
+```
+
+## 3. APIRouter — endpoints i en egen fil
+
+```python
+# routers/games.py
+from fastapi import APIRouter
+from models import GameCreate, GameOut
+
+router = APIRouter(prefix="/games", tags=["games"])
+
+games_db = []
+next_id = 1
+
+@router.get("/", response_model=list[GameOut])
+def get_games():
+    return games_db
+
+@router.get("/{game_id}", response_model=GameOut)
+def get_game(game_id: int):
+    for game in games_db:
+        if game["id"] == game_id:
+            return game
+    return {"error": "Game not found"}
+
+@router.post("/", response_model=GameOut)
+def create_game(game: GameCreate):
+    global next_id
+    new_game = {"id": next_id, **game.model_dump()}
+    games_db.append(new_game)
+    next_id += 1
+    return new_game
+```
+
+Notera `prefix="/games"` — det betyder att `@router.get("/")` faktiskt blir `/games/`, och `@router.get("/{game_id}")` blir `/games/{game_id}`. Vi slipper upprepa `/games` i varje route.
+
+## 4. Koppla ihop allt i main.py
+
+```python
+# main.py
+from fastapi import FastAPI
+from routers import games, players
+
+app = FastAPI(title="GameLog API")
+
+app.include_router(games.router)
+app.include_router(players.router)
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the GameLog API"}
+```
+
+`main.py` blir nu mycket kortare — dess enda jobb är att sätta ihop appen och registrera routers. Varje domän (games, players) har sin egen fil med sin egen logik.
+
+::: {.callout-tip}
+## tags=["games"]
+`tags` grupperar endpoints i `/docs`-sidan, så att alla `/games`-endpoints hamnar under en egen rubrik, skilt från `/players`. Rent kosmetiskt, men gör dokumentationen mycket lättare att navigera när API:et växer.
+:::
+
+## 5. Depends() — grunderna
+
+`Depends()` låter en endpoint be FastAPI om något den behöver, utan att själv veta *hur* det skapas. Ett enkelt exempel — en delad funktion för paginering:
+
+```python
+from fastapi import Depends
+
+def pagination_params(skip: int = 0, limit: int = 10):
+    return {"skip": skip, "limit": limit}
+
+@router.get("/")
+def get_games(pagination: dict = Depends(pagination_params)):
+    skip = pagination["skip"]
+    limit = pagination["limit"]
+    return games_db[skip : skip + limit]
+```
+
+FastAPI anropar `pagination_params` automatiskt, läser `skip`/`limit` från query-parametrarna, och skickar in resultatet i `get_games`. Samma `pagination_params`-funktion kan återanvändas i `players.py` också — ingen kod behöver upprepas.
+
+::: {.callout-tip}
+## Varför är detta viktigt nu?
+`Depends()` känns kanske overkill för paginering, men det är exakt samma mekanism vi använder för att ge varje endpoint tillgång till en databas-session när vi når databasdelen av kursen (vecka 15). Bra att ha sett mönstret redan nu.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Bygg om till mappstruktur
+Ta din FastAPI-app från vecka 9–10 och dela upp den enligt strukturen ovan: `main.py`, `models.py`, `routers/games.py`.
+:::
+
+::: {.callout-important}
+## Övning 2 – players-router
+Skapa `routers/players.py` med en egen `APIRouter` (`prefix="/players"`), och flytta över dina player-endpoints dit.
+:::
+
+::: {.callout-important}
+## Övning 3 – Registrera routers
+Uppdatera `main.py` så den inkluderar båda routrarna med `include_router()`. Kontrollera i `/docs` att både `/games` och `/players` visas, grupperade under varsin tagg.
+:::
+
+::: {.callout-important}
+## Övning 4 – Fler endpoints per router
+Lägg till en `PUT /games/{game_id}`- och en `DELETE /games/{game_id}`-endpoint i `games.py`.
+:::
+
+::: {.callout-important}
+## Övning 5 – Delad pagineringsfunktion
+Skapa en `pagination_params`-funktion i en egen fil, t.ex. `dependencies.py`, och använd den med `Depends()` i både `games.py` och `players.py`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Sökväg-konflikter
+Lägg till en `/games/search`-endpoint. Testa vad som händer om du råkar placera den efter `/games/{game_id}` i filen — och flytta den till rätt ordning om det behövs.
+:::
+
+::: {.callout-important}
+## Övning 7 (utmaning) – playthroughs-router
+Skapa en tredje router, `routers/playthroughs.py`, med grundläggande CRUD-endpoints för playthroughs (i minnet, ingen databas än).
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Egen dependency för validering
+Skriv en dependency-funktion `valid_platform(platform: str)` som `raise`:ar ett `HTTPException(400)` om plattformen inte finns i en tillåten lista (`"PC"`, `"PlayStation"`, `"Xbox"`, `"Switch"`). Använd den med `Depends()` i en endpoint som filtrerar på plattform.
+:::
+
+## Sammanfattning
+
+GameLog är nu organiserat som ett riktigt, skalbart projekt: routers per domän, delade Pydantic-modeller, och grunderna i `Depends()`. Den strukturen håller resten av kursen. Nästa vecka avslutar vi del 4 (bygga API:et) med en **komplett CRUD-API i minnet** — innan vi i del 5 ersätter minneslagringen med en riktig databas.

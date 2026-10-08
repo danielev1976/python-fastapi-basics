@@ -1,0 +1,228 @@
+---
+title: "Vecka 1: Kom igång med Python"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Välkommen till GameLog
+
+Under den här kursen bygger vi tillsammans **GameLog** – en applikation där du kan hålla koll på vilka spel du äger, vilka du har spelat, och vad du tyckte om dem. Precis som Letterboxd fast för spel i stället för filmer.
+
+Vi börjar helt utan webb-API:er och databaser. Först måste vi lära oss språket Python ordentligt. I slutet av kursen har GameLog vuxit till en riktig applikation med ett API och en databas i botten.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- installera Python och skapa en virtuell miljö
+- skriva och köra ett enkelt Python-program
+- använda variabler och grundläggande datatyper
+- styra programflödet med `if`/`elif`/`else`
+- upprepa kod med `while`- och `for`-loopar
+:::
+
+## 1. Installation och uppsättning
+
+### Installera Python
+
+Kontrollera först om Python redan är installerat:
+
+```bash
+python3 --version
+```
+
+Om du inte har Python, ladda ner det från [python.org](https://www.python.org/downloads/). Vi använder Python 3.11 eller senare i den här kursen.
+
+### Virtuell miljö (venv)
+
+En virtuell miljö gör att varje projekt får sina egna paket, utan att krocka med andra projekt på datorn.
+
+```bash
+python3 -m venv .venv
+```
+
+Aktivera den:
+
+```bash
+# macOS/Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+```
+
+::: {.callout-tip}
+## Varför bry sig om venv redan nu?
+Längre fram i kursen kommer vi installera paket som FastAPI och SQLAlchemy. Om vi vänjer oss vid venv från start slipper vi problem senare.
+:::
+
+## 2. Ditt första program
+
+Skapa en fil som heter `main.py` och skriv:
+
+```python
+print("Welcome to GameLog!")
+```
+
+Kör den i terminalen:
+
+```bash
+python3 main.py
+```
+
+`print()` är en **funktion** – ett kommando som gör något åt dig. Vi kommer använda den mycket för att se vad vår kod gör.
+
+## 3. Variabler och datatyper
+
+En variabel är en namngiven plats i minnet där vi sparar ett värde.
+
+```python
+game_title = "The Legend of Zelda"
+release_year = 2023
+rating = 4.5
+owns_game = True
+```
+
+::: {.callout-tip}
+## Namnkonvention
+Vi skriver all kod på engelska genom hela kursen – variabelnamn, funktionsnamn och kommentarer. Det är standarden i den riktiga programmeringsvärlden, och det gör det lättare att läsa dokumentation och andras kod senare.
+:::
+
+Python har några grundläggande datatyper vi kommer använda hela kursen:
+
+| Typ | Exempel | Beskrivning |
+|---|---|---|
+| `str` | `"Zelda"` | text (sträng) |
+| `int` | `2023` | heltal |
+| `float` | `4.5` | decimaltal |
+| `bool` | `True`/`False` | sant eller falskt |
+
+```python
+print(type(game_title))   # <class 'str'>
+print(type(rating))       # <class 'float'>
+```
+
+### Input från användaren
+
+```python
+title = input("Which game are you playing right now? ")
+print("You are currently playing:", title)
+```
+
+::: {.callout-warning}
+## Kom ihåg
+`input()` returnerar **alltid** en sträng, även om användaren skriver en siffra. Vill du räkna med värdet måste du konvertera det med `int()` eller `float()`.
+:::
+
+## 4. Villkor: if / elif / else
+
+Med villkor kan programmet ta olika vägar beroende på situationen.
+
+```python
+rating = 8
+
+if rating >= 9:
+    print("Masterpiece!")
+elif rating >= 7:
+    print("Really good game.")
+elif rating >= 5:
+    print("It's alright.")
+else:
+    print("Not for me.")
+```
+
+Jämförelseoperatorer att känna till: `==`, `!=`, `<`, `>`, `<=`, `>=`. Logiska operatorer: `and`, `or`, `not`.
+
+```python
+platform = "PC"
+has_completed_game = True
+
+if platform == "PC" and has_completed_game:
+    print("Nice work finishing it on PC!")
+```
+
+## 5. Loopar: while och for
+
+### while-loop
+
+Upprepar kod så länge ett villkor är sant.
+
+```python
+games_left = 3
+
+while games_left > 0:
+    print("You have", games_left, "games left in the backlog.")
+    games_left -= 1
+
+print("Backlog is empty!")
+```
+
+### for-loop
+
+Upprepar kod för varje element i en samling.
+
+```python
+backlog = ["Hades", "Celeste", "Hollow Knight"]
+
+for game in backlog:
+    print("Next game to play:", game)
+```
+
+`range()` används ofta tillsammans med `for` när du vill upprepa något ett visst antal gånger:
+
+```python
+for i in range(5):
+    print("Play day", i + 1)
+```
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Din spelprofil
+Skapa variabler för ditt favoritspel: `game_title`, `release_year`, `rating` (1–10) och `has_completed` (`True`/`False`). Skriv ut en snygg presentation av spelet med `print()`.
+:::
+
+::: {.callout-important}
+## Övning 2 – Betygsättare
+Skriv ett program som frågar användaren efter ett betyg (1–10) med `input()` och skriver ut ett omdöme baserat på betyget, med `if`/`elif`/`else`.
+:::
+
+::: {.callout-important}
+## Övning 3 – Backloggen
+Skapa en lista med minst 5 speltitlar (`backlog`). Använd en `for`-loop för att skriva ut varje spel med ett nummer framför, t.ex. `1. Hades`.
+:::
+
+::: {.callout-important}
+## Övning 4 – Plattformskoll
+Skapa variabeln `platform` med värdet `"PC"`, `"PlayStation"`, `"Xbox"` eller `"Switch"`. Skriv ett `if`/`elif`/`else` som skriver ut ett anpassat meddelande för varje plattform.
+:::
+
+::: {.callout-important}
+## Övning 5 – Prisvarning
+Skriv en variabel `price` (ett heltal). Använd villkor för att skriva ut `"Billigt fynd!"` om priset är under 100, `"Rimligt pris"` om det är 100–400, och `"Vänta på rea"` om det är över 400.
+:::
+
+::: {.callout-important}
+## Övning 6 – Räkna ner till release
+Använd en `while`-loop som räknar ner `days_until_release` från valfritt starttal till 0, och skriver ut antalet dagar kvar för varje varv. Skriv "Release day!" när loopen är klar.
+:::
+
+::: {.callout-important}
+## Övning 7 (utmaning) – Genomsnittsbetyg
+Skapa en lista `ratings` med minst 5 betyg (`int` eller `float`). Använd en `for`-loop för att summera alla betyg, och räkna sedan ut och skriv ut genomsnittet.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Logga speltimmar
+Använd en `while`-loop som frågar användaren "Do you want to log more play hours? (yes/no)" och summerar speltimmar tills användaren svarar nej. Skriv ut totalen på slutet.
+:::
+
+## Sammanfattning
+
+Den här veckan har vi lagt grunden: installation, variabler, villkor och loopar. Nästa vecka bygger vi vidare med **listor, dictionaries och tuples** – verktygen vi behöver för att faktiskt lagra hela GameLog-backloggen i minnet, innan vi senare flyttar över till en riktig databas.

@@ -1,0 +1,172 @@
+---
+title: "Vecka 5: Klasser och objekt"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Från dictionaries till riktiga objekt
+
+Hittills har vi representerat ett spel som en dictionary: `{"title": "Hades", "rating": 9}`. Det fungerar, men det finns inget som säkerställer att alla spel faktiskt har samma struktur, och vi kan inte enkelt koppla ihop data med beteende (funktioner som hör till just det spelet). Nu börjar **del 2: objektorienterad programmering (OOP)** — vi bygger om GameLog runt riktiga klasser.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- definiera en klass med `__init__` och `self`
+- skapa (instansiera) objekt från en klass
+- lägga till metoder som jobbar med objektets egna data
+- skriva en tydlig strängrepresentation med `__str__`
+:::
+
+## 1. Din första klass
+
+```python
+class Game:
+    def __init__(self, title, platform, rating):
+        self.title = title
+        self.platform = platform
+        self.rating = rating
+
+hades = Game("Hades", "PC", 9)
+celeste = Game("Celeste", "Switch", 10)
+
+print(hades.title)      # Hades
+print(celeste.rating)   # 10
+```
+
+- `class Game:` definierar en ny typ.
+- `__init__` är en **konstruktor** — den körs automatiskt när ett nytt objekt skapas.
+- `self` refererar till just det objektet som skapas eller anropas. Det är alltid första parametern i en metod.
+
+::: {.callout-tip}
+## self är inte magi
+`self` är bara ett namn (konvention, inte ett nyckelord) för "det här specifika objektet". `hades.title` och `celeste.title` är olika värden, trots att båda kommer från samma klass — precis som två olika dictionaries.
+:::
+
+## 2. Attribut och metoder
+
+**Attribut** är data som hör till objektet. **Metoder** är funktioner som hör till klassen och kan använda objektets attribut via `self`.
+
+```python
+class Game:
+    def __init__(self, title, platform, rating):
+        self.title = title
+        self.platform = platform
+        self.rating = rating
+
+    def is_highly_rated(self):
+        return self.rating >= 8
+
+    def describe(self):
+        print(f"{self.title} ({self.platform}) - {self.rating}/10")
+
+hades = Game("Hades", "PC", 9)
+hades.describe()                  # Hades (PC) - 9/10
+print(hades.is_highly_rated())    # True
+```
+
+## 3. Flera objekt, samma klass
+
+```python
+games = [
+    Game("Hades", "PC", 9),
+    Game("Celeste", "Switch", 10),
+    Game("Hollow Knight", "Switch", 9.5),
+]
+
+for game in games:
+    game.describe()
+```
+
+Jämför med förra veckans lista av dictionaries — strukturen är densamma, men nu vet vi *garanterat* att varje spel har exakt de attributen, och vi kan lägga logik direkt på objekten i stället för i lösa funktioner.
+
+## 4. __str__ — en snyggare utskrift
+
+```python
+class Game:
+    def __init__(self, title, platform, rating):
+        self.title = title
+        self.platform = platform
+        self.rating = rating
+
+    def __str__(self):
+        return f"{self.title} ({self.platform}) - {self.rating}/10"
+
+hades = Game("Hades", "PC", 9)
+print(hades)   # Hades (PC) - 9/10, i stället för <__main__.Game object at 0x...>
+```
+
+`__str__` är en av Pythons **dundermetoder** ("double underscore") — speciella metoder som Python själv anropar automatiskt i vissa situationer. `print()` anropar `__str__` bakom kulisserna.
+
+## 5. Klassattribut vs instansattribut
+
+```python
+class Game:
+    total_games_created = 0   # klassattribut - delas av ALLA objekt
+
+    def __init__(self, title):
+        self.title = title              # instansattribut - unikt per objekt
+        Game.total_games_created += 1
+
+hades = Game("Hades")
+celeste = Game("Celeste")
+
+print(Game.total_games_created)   # 2
+```
+
+::: {.callout-warning}
+## Vanligt nybörjarfel
+Instansattribut (`self.title`) hör till det enskilda objektet. Klassattribut (`total_games_created`) delas mellan alla objekt av klassen. Blanda inte ihop dem — om du är osäker, fråga dig: "hör den här datan till ett specifikt spel, eller till alla spel som koncept?"
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Din första klass
+Skapa en klass `Game` med `title`, `platform` och `rating`. Skapa tre olika objekt och skriv ut deras `title` var för sig.
+:::
+
+::: {.callout-important}
+## Övning 2 – Metoder
+Lägg till en metod `is_completed_worthy()` på `Game` som returnerar `True` om `rating >= 7`. Testa på flera objekt.
+:::
+
+::: {.callout-important}
+## Övning 3 – __str__
+Lägg till `__str__` på `Game` så att `print(game)` visar en läsbar rad, t.ex. `"Hades (PC) - 9/10"`.
+:::
+
+::: {.callout-important}
+## Övning 4 – En Player-klass
+Skapa en klass `Player` med `name` och `favorite_genre`. Skapa två spelare och skriv ut deras information.
+:::
+
+::: {.callout-important}
+## Övning 5 – Lista av objekt
+Skapa en lista med minst 5 `Game`-objekt. Loopa igenom listan och skriv bara ut titlarna på spel som är `is_completed_worthy()`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Klassattribut
+Lägg till ett klassattribut `total_games` på `Game` som räknar hur många `Game`-objekt som skapats totalt. Skapa flera spel och skriv ut totalen.
+:::
+
+::: {.callout-important}
+## Övning 7 – Genomsnitt via metod
+Skriv en funktion `calculate_average_rating(games)` som tar en lista med `Game`-objekt (inte dictionaries!) och returnerar genomsnittsbetyget.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Uppdatera ett objekt
+Lägg till en metod `update_rating(self, new_rating)` på `Game` som ändrar `self.rating`, men bara om `new_rating` är mellan 1 och 10 (annars, skriv ut ett felmeddelande — vi bygger vidare med riktig felhantering här nästa vecka).
+:::
+
+## Sammanfattning
+
+Nu representerar GameLog spel som riktiga objekt i stället för lösa dictionaries, med både data och beteende samlat på ett ställe. Nästa vecka fördjupar vi oss i **inkapsling och komposition** — hur vi skyddar ett objekts data och bygger objekt som består av andra objekt, som en `Playthrough` som innehåller både ett `Game` och en `Player`.

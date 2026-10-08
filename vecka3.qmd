@@ -1,0 +1,250 @@
+---
+title: "Vecka 3: Funktioner och moduler"
+subtitle: "GameLog – bygg din egen spelbacklogg"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: [cosmo, styles.scss]
+    code-copy: true
+    highlight-style: github
+---
+
+## Från en lång fil till återanvändbara byggblock
+
+Hittills har all vår kod legat i en enda fil, och vi har upprepat liknande kod flera gånger (t.ex. för att räkna ut ett genomsnittsbetyg). Den här veckan lär vi oss **funktioner** – namngivna, återanvändbara kodblock – och hur vi delar upp koden i flera **filer/moduler**. Det är steget som gör GameLog till ett riktigt program i stället för ett skript.
+
+::: {.callout-note}
+## Veckans mål
+Efter den här lektionen ska du kunna:
+
+- definiera och anropa egna funktioner
+- använda parametrar, default-värden och `return`
+- förstå skillnaden mellan lokal och global scope
+- dela upp kod i flera filer och importera mellan dem
+:::
+
+## 1. Din första funktion
+
+```python
+def greet_player():
+    print("Welcome back to GameLog!")
+
+greet_player()
+greet_player()   # kan anropas hur många gånger som helst
+```
+
+`def` definierar funktionen. Koden inuti körs bara när funktionen **anropas** — inte när den definieras.
+
+## 2. Parametrar och argument
+
+Funktioner blir mycket mer användbara när de kan ta emot data.
+
+```python
+def greet_player(name):
+    print(f"Welcome back, {name}!")
+
+greet_player("Daniel")
+greet_player("Alex")
+```
+
+### Flera parametrar
+
+```python
+def print_game_summary(title, rating):
+    print(f"{title} - rated {rating}/10")
+
+print_game_summary("Hades", 9)
+```
+
+### Default-värden
+
+```python
+def print_game_summary(title, rating=5):
+    print(f"{title} - rated {rating}/10")
+
+print_game_summary("Celeste", 10)
+print_game_summary("Some Unrated Game")   # använder default-värdet 5
+```
+
+### Keyword arguments
+
+Du kan skicka in argument med namn, i valfri ordning:
+
+```python
+print_game_summary(rating=8, title="Hollow Knight")
+```
+
+## 3. Return-värden
+
+Hittills har våra funktioner bara skrivit ut saker med `print()`. Ofta vill vi i stället att funktionen **returnerar** ett värde vi kan använda vidare.
+
+```python
+def calculate_average_rating(ratings):
+    return sum(ratings) / len(ratings)
+
+my_ratings = [9, 10, 7, 8.5]
+average = calculate_average_rating(my_ratings)
+print(f"Average rating: {average}")
+```
+
+::: {.callout-warning}
+## print() vs return
+`print()` visar bara något i terminalen. `return` skickar tillbaka ett värde som du kan spara i en variabel och använda i resten av programmet. En funktion som bara har `print()` kan inte återanvändas lika flexibelt som en som `return`:ar sitt resultat.
+:::
+
+### Flera returvärden
+
+```python
+def get_min_max_rating(ratings):
+    return min(ratings), max(ratings)
+
+lowest, highest = get_min_max_rating(my_ratings)
+print(f"Lowest: {lowest}, Highest: {highest}")
+```
+
+## 4. Scope – lokala och globala variabler
+
+En variabel som skapas **inuti** en funktion existerar bara där (lokal scope). Variabler utanför alla funktioner är globala.
+
+```python
+total_games = 0   # global variabel
+
+def add_game():
+    total_games = 1   # detta är en NY lokal variabel, inte samma som ovan!
+    print(total_games)
+
+add_game()
+print(total_games)   # fortfarande 0
+```
+
+Vill du faktiskt ändra en global variabel inuti en funktion behöver du nyckelordet `global` — men det är oftast bättre design att låta funktionen `return` ett nytt värde i stället:
+
+```python
+def add_game(current_total):
+    return current_total + 1
+
+total_games = add_game(total_games)
+print(total_games)   # 1
+```
+
+::: {.callout-tip}
+## Bra vana
+Föredra funktioner som tar emot värden som parametrar och `return`:ar ett resultat, i stället för att läsa och ändra globala variabler. Det gör koden mycket lättare att testa och förstå.
+:::
+
+## 5. Funktioner som jobbar med hela GameLog
+
+```python
+games = [
+    {"title": "Hades", "platform": "PC", "rating": 9},
+    {"title": "Celeste", "platform": "Switch", "rating": 10},
+    {"title": "Hollow Knight", "platform": "Switch", "rating": 9.5},
+]
+
+def filter_by_platform(games, platform):
+    return [game for game in games if game["platform"] == platform]
+
+def calculate_average(games):
+    ratings = [game["rating"] for game in games]
+    return sum(ratings) / len(ratings)
+
+switch_games = filter_by_platform(games, "Switch")
+print(switch_games)
+print(calculate_average(games))
+```
+
+## 6. Moduler – dela upp koden i flera filer
+
+När filen växer sig lång är det dags att dela upp koden. En Python-fil är automatiskt en **modul** som kan importeras i en annan fil.
+
+Skapa en fil `game_utils.py`:
+
+```python
+# game_utils.py
+
+def calculate_average(games):
+    ratings = [game["rating"] for game in games]
+    return sum(ratings) / len(ratings)
+
+def filter_by_platform(games, platform):
+    return [game for game in games if game["platform"] == platform]
+```
+
+Och i din huvudfil `main.py`:
+
+```python
+# main.py
+from game_utils import calculate_average, filter_by_platform
+
+games = [
+    {"title": "Hades", "platform": "PC", "rating": 9},
+    {"title": "Celeste", "platform": "Switch", "rating": 10},
+]
+
+print(calculate_average(games))
+```
+
+Du kan också importera hela modulen och komma åt funktionerna med punktnotation:
+
+```python
+import game_utils
+
+print(game_utils.calculate_average(games))
+```
+
+::: {.callout-tip}
+## Varför dela upp koden?
+Mindre filer med tydligt ansvar är lättare att läsa, testa och återanvända. Det är exakt samma princip vi kommer följa när vi bygger vårt FastAPI-projekt längre fram — då blir uppdelningen i moduler avgörande.
+:::
+
+## Övningar
+
+::: {.callout-important}
+## Övning 1 – Din första egna funktion
+Skriv en funktion `print_welcome(name)` som skriver ut ett personligt välkomstmeddelande. Anropa den med ditt eget namn.
+:::
+
+::: {.callout-important}
+## Övning 2 – Default-värden
+Skriv en funktion `describe_game(title, rating=None)` som skriver ut titeln, och "Not yet rated" om `rating` är `None`, annars betyget.
+:::
+
+::: {.callout-important}
+## Övning 3 – Räkna speltimmar
+Skriv en funktion `calculate_total_hours(sessions)` som tar en lista med speltimmar (t.ex. `[2, 1.5, 3, 0.5]`) och returnerar summan.
+:::
+
+::: {.callout-important}
+## Övning 4 – Högsta betyg
+Skriv en funktion `find_highest_rated(games)` som tar en lista med spel-dictionaries och returnerar titeln på spelet med högst betyg.
+:::
+
+::: {.callout-important}
+## Övning 5 – Filtrera på betyg
+Skriv en funktion `filter_by_min_rating(games, minimum)` som returnerar en ny lista med bara de spel som har `rating >= minimum`.
+:::
+
+::: {.callout-important}
+## Övning 6 – Flera returvärden
+Skriv en funktion `get_stats(ratings)` som returnerar tre värden: lägsta, högsta och genomsnittliga betyget. Testa funktionen och skriv ut alla tre värden.
+:::
+
+::: {.callout-important}
+## Övning 7 – Egen modul
+Skapa en fil `game_utils.py` med minst tre funktioner från tidigare övningar. Importera och använd dem i en separat `main.py`.
+:::
+
+::: {.callout-important}
+## Övning 8 (utmaning) – Sökfunktion
+Skriv en funktion `find_game_by_title(games, title)` som söker igenom en lista med spel och returnerar spelet (dictionaryn) om det hittas, annars `None`. Testa både med ett spel som finns och ett som inte finns.
+:::
+
+::: {.callout-important}
+## Övning 9 (utmaning) – Bygg en liten meny
+Skriv ett program med en `while`-loop som visar en meny ("1. Lägg till spel", "2. Visa backlogg", "3. Avsluta"), och en funktion för varje menyval. Använd `input()` för att läsa användarens val.
+:::
+
+## Sammanfattning
+
+Nu kan du bryta ut kod i funktioner med parametrar, default-värden och returvärden, och dela upp ett program i flera moduler. Nästa vecka handlar om **felhantering och filer** — hur vi hanterar när något går fel, och hur vi kan spara GameLog-datan till en fil så att den inte försvinner varje gång programmet stängs.
